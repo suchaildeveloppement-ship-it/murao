@@ -1,0 +1,584 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>:root{color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Configurateur MURAO Multi-splits</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Poppins:wght@500;600&display=swap">
+<style>
+/* Mise en page : colonne de configuration à gauche, devis collant à droite ; une seule colonne sur téléphone. */
+:root{
+  --bg:#f2f6f3; --surface:#ffffff; --ink:#14241c; --muted:#55685d; --line:#d5dfd9;
+  --green:#2b7d53; --on-green:#ffffff; --soft:#e3f0e8; --field:#ffffff;
+  --warn:#8a5212; --warn-bg:#fbefdc; --bad:#a32b27; --bad-bg:#fbe4e2; --info:#1d5e78; --info-bg:#e0eff5;
+  --f-head:'Poppins',system-ui,sans-serif; --f-body:'Barlow',system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0e1913; --surface:#16251d; --ink:#e5efe9; --muted:#97ab9f; --line:#2a4034;
+  --green:#5cbf88; --on-green:#0a1a11; --soft:#1c3828; --field:#101e17;
+  --warn:#f0b66b; --warn-bg:#3a2b15; --bad:#f2958f; --bad-bg:#3c1c1b; --info:#8ccae3; --info-bg:#173040; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#0e1913; --surface:#16251d; --ink:#e5efe9; --muted:#97ab9f; --line:#2a4034;
+  --green:#5cbf88; --on-green:#0a1a11; --soft:#1c3828; --field:#101e17;
+  --warn:#f0b66b; --warn-bg:#3a2b15; --bad:#f2958f; --bad-bg:#3c1c1b; --info:#8ccae3; --info-bg:#173040; color-scheme:dark;}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.45 var(--f-body);padding-inline:16px;padding-block:20px 84px;font-variant-numeric:tabular-nums}
+.wrap{max-width:1240px;margin:0 auto}
+h1,h2,h3{font-family:var(--f-head);font-weight:600;margin:0;text-wrap:balance}
+h1{font-size:clamp(20px,3.4vw,28px);letter-spacing:-.01em}
+h2{font-size:17px}
+h3{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-family:var(--f-body);font-weight:600}
+.lead{color:var(--muted);margin:6px 0 0;max-width:70ch}
+header{display:flex;flex-direction:column;gap:2px;margin-bottom:18px}
+.app{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;align-items:start}
+@media (min-width:1000px){.app{grid-template-columns:minmax(0,1fr) 420px}}
+.col{display:flex;flex-direction:column;gap:16px;min-width:0}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.panel-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 12px}
+.hint{color:var(--muted);font-size:13px;margin:0}
+.row{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:end}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted);min-width:0}
+input[type=number],input[type=text],select{height:38px;border:1px solid var(--line);background:var(--field);color:var(--ink);border-radius:6px;padding:0 10px;font:inherit;min-width:0;width:100%}
+input[type=checkbox]{width:18px;height:18px;accent-color:var(--green)}
+:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+button{font:inherit;color:inherit;cursor:pointer}
+.btn{height:38px;padding:0 14px;border-radius:6px;border:1px solid var(--line);background:var(--surface);font-weight:500}
+.btn:hover{border-color:var(--green)}
+.btn.pri{background:var(--green);color:var(--on-green);border-color:var(--green)}
+.btn.sm{height:32px;padding:0 10px;font-size:13px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.seg button{border:0;background:var(--field);padding:0 14px;height:36px;font-weight:500}
+.seg button[aria-pressed=true]{background:var(--green);color:var(--on-green)}
+.gridg{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.gbtn{text-align:left;border:1px solid var(--line);background:var(--field);border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:2px}
+.gbtn[aria-pressed=true]{border-color:var(--green);box-shadow:inset 0 0 0 1px var(--green);background:var(--soft)}
+.gbtn .kw{font:600 22px/1.1 var(--f-head)}
+.gbtn .ty{color:var(--muted);font-size:13px}
+.gbtn .pr{font-weight:600;margin-top:4px}
+.specs{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px 18px;margin:0}
+.specs div{display:flex;justify-content:space-between;gap:10px;border-bottom:1px dotted var(--line);padding-bottom:4px;font-size:14px}
+.specs dt{color:var(--muted)}.specs dd{margin:0;font-weight:500;text-align:right}
+.slot{border:1px solid var(--line);border-radius:8px;padding:14px;display:flex;flex-direction:column;gap:12px;background:var(--field)}
+.slot-top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:4px 12px}
+.slot-title{font-weight:600}
+.slot-price{font-size:13px;color:var(--muted)}
+.slot-price b{color:var(--ink)}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:10px}
+.checks{display:flex;flex-wrap:wrap;gap:8px 18px}
+.checks label{display:flex;align-items:center;gap:8px;font-size:14px}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600}
+td input,td select{width:96px;height:34px}
+td.r,th.r{text-align:right}
+.chips{display:flex;flex-direction:column;gap:6px}
+.chip{border-radius:6px;padding:7px 10px;font-size:13.5px}
+.chip.warn{background:var(--warn-bg);color:var(--warn)}
+.chip.bad{background:var(--bad-bg);color:var(--bad)}
+.chip.info{background:var(--info-bg);color:var(--info)}
+.summary{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:14px;min-width:0}
+@media (min-width:1000px){.summary{position:sticky;top:calc(12px + env(safe-area-inset-top,0px));max-height:calc(100dvh - 24px);overflow-y:auto}}
+.sec-h{margin-top:4px}
+.ln{padding:7px 0;border-bottom:1px solid var(--line)}
+.ln-main{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
+.ln-t{font-weight:500;min-width:0;overflow-wrap:anywhere}
+.ln-v{font-weight:600;white-space:nowrap}
+.ln-sub{color:var(--muted);font-size:12.5px;overflow-wrap:anywhere}
+.tag{display:inline-block;background:var(--warn-bg);color:var(--warn);border-radius:4px;padding:0 6px;font-size:11.5px;font-weight:600;margin-left:6px}
+.tot{display:flex;flex-direction:column;gap:5px}
+.tot div{display:flex;justify-content:space-between;gap:12px}
+.tot .big{font:600 20px/1.2 var(--f-head);border-top:2px solid var(--green);padding-top:8px;margin-top:4px}
+.tot .mut{color:var(--muted)}
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));display:flex;justify-content:space-between;align-items:center;gap:12px;z-index:5}
+.bar span{font-size:12px;color:var(--muted);display:block}
+.bar b{font:600 18px var(--f-head)}
+textarea{width:100%;min-height:150px;border:1px solid var(--line);border-radius:6px;background:var(--field);color:var(--ink);font:13px/1.4 ui-monospace,Menlo,Consolas,monospace;padding:8px}
+.toast{font-size:13px;color:var(--green);min-height:18px}
+@media (prefers-reduced-motion:no-preference){.gbtn,.btn{transition:border-color .15s}}
+/* Photos : cadre clair fixe dans les deux thèmes */
+:root{--photo:#f3f1ec}
+.ph{background:var(--photo);border-radius:8px;display:grid;place-items:center;overflow:hidden;aspect-ratio:16/10;max-width:100%}
+.ph img{width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply;display:block}
+.gmain{display:grid;grid-template-columns:minmax(0,260px) minmax(0,1fr);gap:16px;align-items:center}
+@media (max-width:640px){.gmain{grid-template-columns:minmax(0,1fr)}}
+.slot-main{display:grid;grid-template-columns:130px minmax(0,1fr);gap:14px;align-items:start}
+@media (max-width:640px){.slot-main{grid-template-columns:minmax(0,1fr)}.slot-main .ph{max-width:200px}}
+.slot-form{display:flex;flex-direction:column;gap:12px;min-width:0}
+/* Récapitulatif */
+.recap{margin-top:16px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:18px;min-width:0}
+.rc-head{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:end;justify-content:space-between}
+.rc-head label{max-width:340px;width:100%}
+.rc-date{color:var(--muted);font-size:14px}
+.rc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
+.rc-card{border:1px solid var(--line);border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:10px;background:var(--field);min-width:0}
+.rc-card.main{border-color:var(--green)}
+.rc-t{font-weight:600;overflow-wrap:anywhere}
+.rc-k{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600}
+.rc-m{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.rc-l{display:flex;flex-direction:column;gap:3px;font-size:13.5px}
+.rc-l div{display:flex;justify-content:space-between;gap:10px}
+.rc-l span:first-child{min-width:0;overflow-wrap:anywhere}
+.rc-l .n{white-space:nowrap;font-weight:500}
+.rc-l .tt{border-top:1px solid var(--line);padding-top:4px;margin-top:2px;font-weight:600}
+.rc-two{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
+.rc-two table th:nth-child(n+2),.rc-two table td:nth-child(n+2){text-align:right}
+.rc-tot td:first-child{font-weight:500}
+.rc-tot tr.big td{font:600 16px var(--f-head);border-bottom:0;border-top:2px solid var(--green)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Configurateur MURAO Multi-splits</h1>
+    <p class="lead">Tarif catalogue pages 557 à 559, prix en € HT. Choisissez un groupe, associez les unités intérieures, appliquez jusqu'à trois remises et obtenez le devis. Un exemple est pré-rempli, modifiez-le.</p>
+  </header>
+
+  <div class="app" id="view-conf">
+    <div class="col">
+      <section class="panel" id="p-group">
+        <div class="panel-head"><h2>Groupe extérieur</h2>
+          <div class="seg" role="group" aria-label="Couleur du groupe">
+            <button type="button" data-act="gcolor" data-v="0" aria-pressed="true">Blanc</button>
+            <button type="button" data-act="gcolor" data-v="1" aria-pressed="false">Design noir</button>
+          </div>
+        </div>
+        <div class="gridg" id="gbtns"></div>
+        <div id="gnotice"></div>
+        <div class="gmain"><div class="ph" id="gphoto"></div><dl class="specs" id="gspecs"></dl></div>
+      </section>
+
+      <section class="panel" id="p-slots">
+        <div class="panel-head"><h2>Unités intérieures</h2><p class="hint" id="slotsHint"></p></div>
+        <div id="slots" style="display:flex;flex-direction:column;gap:12px"></div>
+        <div id="powerline"></div>
+      </section>
+
+      <section class="panel" id="p-rem">
+        <div class="panel-head"><h2>Remises et TVA</h2><p class="hint">Trois remises par famille, en %.</p></div>
+        <div class="row">
+          <label class="f" style="width:210px">Calcul des remises
+            <select id="mode"><option value="cascade">En cascade (R1, puis R2, puis R3)</option><option value="sum">Additionnées</option></select>
+          </label>
+          <label class="f" style="width:120px">TVA
+            <select id="tva"><option value="20">20 %</option><option value="10">10 %</option><option value="5.5">5,5 %</option></select>
+          </label>
+        </div>
+        <div class="tablewrap"><table id="remtable"></table></div>
+        <div class="row"><button type="button" class="btn sm" data-act="copyrem">Copier la ligne Groupe sur toutes les familles</button></div>
+        <p class="hint">L'éco-participation n'est pas remisée.</p>
+      </section>
+
+      <section class="panel" id="p-inst">
+        <div class="panel-head"><h2>Cuivre et câbles</h2><p class="hint">Longueurs reprises des unités ci-dessus.</p></div>
+        <div id="instAlert"></div>
+        <h3>Couronnes de cuivre</h3>
+        <div class="tablewrap"><table id="cutable"></table></div>
+        <h3>Câbles électriques</h3>
+        <div class="tablewrap"><table id="cabtable"></table></div>
+        <p class="hint">Le catalogue ne donne pas de prix pour le cuivre ni les câbles. Saisissez vos prix : ils sont gardés dans ce navigateur.</p>
+      </section>
+
+      <section class="panel" id="p-free">
+        <div class="panel-head"><h2>Lignes libres</h2><p class="hint">Support, goulotte, pompe de relevage, main d'œuvre…</p></div>
+        <div class="tablewrap"><table id="freetable"></table></div>
+        <div class="row"><button type="button" class="btn sm" data-act="addfree">Ajouter une ligne</button></div>
+      </section>
+    </div>
+
+    <aside class="summary" id="summary" aria-label="Devis">
+      <div class="panel-head"><h2>Devis</h2><span class="hint" id="sumcount"></span></div>
+      <div class="chips" id="alerts"></div>
+      <div id="lines"></div>
+      <div class="tot" id="totals"></div>
+      <div class="row"><button type="button" class="btn pri" data-act="view" data-v="recap">Voir le récapitulatif</button></div>
+    </aside>
+  </div>
+
+  <section class="recap" id="recap-sec" aria-label="Récapitulatif" hidden>
+    <div class="row"><button type="button" class="btn" data-act="view" data-v="conf">← Retour à la configuration</button></div>
+    <div class="rc-head">
+      <div><h2>Récapitulatif du devis</h2><div class="rc-date" id="rcdate"></div></div>
+      <label class="f">Client ou chantier<input type="text" id="client" placeholder="Nom du client, adresse du chantier"></label>
+    </div>
+    <div class="rc-grid" id="rcunits"></div>
+    <div class="rc-two">
+      <div><h3>Installation</h3><div class="tablewrap"><table id="rcinst"></table></div></div>
+      <div><h3>Remises appliquées</h3><div class="tablewrap"><table id="rcrem"></table></div></div>
+    </div>
+    <div class="tablewrap"><table class="rc-tot" id="rctot"></table></div>
+    <div class="row"><button type="button" class="btn pri" data-act="copy">Copier le récapitulatif en texte</button><span class="toast" id="toast" role="status"></span></div>
+    <textarea id="recap" hidden readonly aria-label="Récapitulatif du devis en texte"></textarea>
+  </section>
+</div>
+
+<div class="bar"><div><span>Total HT</span><b id="barTotal">0 €</b></div><button type="button" class="btn pri" data-act="toggle" id="barBtn">Récapitulatif</button></div>
+
+<script>
+(function(){
+'use strict';
+var KEY='murao-configurateur-v1';
+var $=function(s,r){return (r||document).querySelector(s)};
+var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
+var FR=new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'});
+var eur=function(n){return FR.format(n)};
+var num=function(n,d){return Number(n).toLocaleString('fr-FR',{maximumFractionDigits:d==null?0:d})};
+var kw=function(w){return (w/1000).toLocaleString('fr-FR',{maximumFractionDigits:1})};
+var val=function(v){var n=parseFloat(String(v).replace(',','.'));return isFinite(n)?n:0};
+
+/* ---------- Données catalogue (pages 557 à 559) ---------- */
+var GROUPS=[
+ {nb:2,type:'Bi-split',kw:'4',w:4000,lib:'UE MULTI 2UI 4KW MURAO',ref:[872191,872205],prix:[1837,2020],eco:7.69,fr:[4000,1500,4600],ch:[4600,1300,5200],I:9,cal:16,alim:'3G1,5',std:20,max:50,charge:950},
+ {nb:2,type:'Bi-split',kw:'5',w:5000,lib:'UE MULTI 2UI 5KW MURAO',ref:[872192,872206],prix:[1978,2176],eco:7.69,fr:[5000,1800,5300],ch:[5600,1500,6100],I:9.8,cal:16,alim:'3G1,5',std:20,max:50,charge:1050},
+ {nb:3,type:'Tri-split',kw:'5,4',w:5400,lib:'UE MULTI 3UI 5,4KW MURAO',ref:[872193,872207],prix:[2812,3094],eco:10.02,fr:[5400,2100,6600],ch:[7000,1700,7200],I:10.8,cal:20,alim:'3G2,5',std:30,max:50,charge:1400},
+ {nb:3,type:'Tri-split',kw:'7',w:7000,lib:'UE MULTI 3UI 7KW MURAO',ref:[872194,872208],prix:[3055,3360],eco:10.02,fr:[7000,2400,7600],ch:[7200,2900,7500],I:11.9,cal:20,alim:'3G2,5',std:30,max:60,charge:1400},
+ {nb:4,type:'Quadri-split',kw:'8',w:8000,lib:'UE MULTI 4UI 8KW MURAO',ref:[872195,872209],prix:[3795,4174],eco:10.02,fr:[8000,3200,9500],ch:[9200,4400,10500],I:15.5,cal:25,alim:'3G4',std:40,max:70,charge:2000},
+ {nb:5,type:'5 postes',kw:'9,5',w:9500,lib:'UE MULTI 5UI 9,5KW MURAO',ref:[872196,872210],prix:[4553,5008],eco:10.02,fr:[9500,3200,11000],ch:[9600,4400,11500],I:18.5,cal:25,alim:'3G4',std:40,max:80,charge:2200}
+];
+function it(w,btu,ch,gaz,kwl,ref,prix,eco,model){return {w:w,btu:btu,ch:ch,gaz:gaz,kw:kwl,ref:ref,prix:prix,eco:eco,model:model}}
+var RANGES={
+ premium:{name:'MURAO Premium',tag:'MURAO PREMIUM',color:true,items:[
+  it(1500,5000,2000,'3/8','1,5',[873974,873980],[568,625],1.75),
+  it(2100,7000,2600,'3/8','2,1',[873975,873981],[600,660],1.75),
+  it(2600,9000,3000,'3/8','2,6',[873976,873982],[632,695],1.75),
+  it(3200,12000,3400,'3/8','3,2',[873977,873983],[766,842],1.75),
+  it(4200,14000,4800,'1/2','4,2',[873978,873984],[991,1091],1.75),
+  it(5300,18000,5900,'1/2','5,3',[873979,873985],[1052,1157],1.75)]},
+ smart:{name:'MURAO Smart',tag:'MURAO SMART',items:[
+  it(1500,5000,2000,'3/8','1,5',[873963],[363],1.75),
+  it(2100,7000,2600,'3/8','2,1',[873964],[382],1.75),
+  it(2700,9000,3100,'3/8','2,7',[873965],[401],1.75),
+  it(3600,12000,3900,'3/8','3,6',[873966],[482],1.75),
+  it(4200,14000,4800,'1/2','4,2',[873967],[603],1.75),
+  it(5300,18000,5800,'1/2','5,3',[873968],[700],1.75)]},
+ access:{name:'MURAO Access',tag:'MURAO ACCESS',items:[
+  it(2700,9000,2900,'3/8','2,7',[873330],[318],1.75),
+  it(3500,12000,3900,'3/8','3,5',[873331],[404],1.75),
+  it(4900,18000,4900,'1/2','4,9',[873332],[646],1.75)]},
+ dojo:{name:'DOJO Cassette 600×600',cassette:true,items:[
+  it(2600,9000,3200,'3/8','2,6',[873937],[1083],2.2,'AB 009 DB.UI'),
+  it(3500,12000,4000,'3/8','3,5',[873938],[1252],2.2,'AB 012 DB.UI'),
+  it(5000,18000,5500,'1/2','5',[873939],[1509],2.2,'AB 018 DB.UI')]}
+};
+var FACADE={ref:873948,prix:171};
+var IMG={groupe:['img/groupe-blanc.jpg','img/groupe-noir.jpg'],premium:['img/premium-blanc.jpg','img/premium-noir.jpg'],smart:['img/smart.jpg'],access:['img/access.jpg'],dojo:['img/dojo.jpg']};
+var photo=function(src,alt){return '<img src="'+src+'" alt="'+esc(alt)+'" loading="lazy">'};
+var OPT={remote:{ref:875156,prix:311,eco:0.14,name:'Télécommande filaire LUMAO YR-E16C'},platine:{ref:875149,prix:203,eco:0.14,name:'Platine interface WK-B'},cozy:{ref:500285,prix:50,eco:0.14,name:'CozyBox Atlantic (CozyTouch, Wi-Fi)'}};
+var FAMS=[['groupe','Groupe extérieur'],['ui','Unités intérieures'],['opt','Options (télécommande, platine, Wi-Fi)'],['inst','Cuivre, câbles, lignes libres']];
+var SECS=[['groupe','Groupe extérieur'],['ui','Unités intérieures'],['opt','Options'],['cu','Cuivre'],['cab','Câbles'],['free','Lignes libres']];
+var DIAMS=['1/4','3/8','1/2'];
+var CABLES=['4G1,5','3G1,5','3G2,5','3G4'];
+var cabName=function(k){return k.replace('G','G x ')+' mm²'};
+
+/* ---------- État ---------- */
+var state={g:2,color:0,mode:'cascade',tva:20,notice:'',alimLen:10,client:'',
+  rem:{groupe:['','',''],ui:['','',''],opt:['','',''],inst:['','','']},
+  cu:{'1/4':{len:25,price:''},'3/8':{len:25,price:''},'1/2':{len:25,price:''}},
+  cable:{'4G1,5':'','3G1,5':'','3G2,5':'','3G4':''},
+  slots:[],free:[]};
+
+function okFor(g,item){return !(g.w===4000 && item.w>=4200)}
+function compatIdx(range,g){var r=[];RANGES[range].items.forEach(function(x,i){if(okFor(g,x))r.push(i)});return r}
+function nearestIdx(range,w,g){var c=compatIdx(range,g);if(!c.length)return -1;var best=c[0];c.forEach(function(i){if(Math.abs(RANGES[range].items[i].w-w)<Math.abs(RANGES[range].items[best].w-w))best=i});return best}
+function newSlot(gi,i){
+  var g=GROUPS[gi],target=g.w/g.nb,c=compatIdx('premium',g),idx=c[c.length-1];
+  for(var k=0;k<c.length;k++){if(RANGES.premium.items[c[k]].w>=target){idx=c[k];break}}
+  return {room:'',range:'premium',idx:idx,color:state.color,len:5,cabLen:5,cabLinked:true,remote:false,platine:false,cozy:false};
+}
+function resizeSlots(){
+  var g=GROUPS[state.g];
+  while(state.slots.length<g.nb)state.slots.push(newSlot(state.g,state.slots.length));
+  state.slots.length=g.nb;
+}
+function normalize(){
+  if(!(state.g>=0&&state.g<GROUPS.length))state.g=2;
+  resizeSlots();
+  var g=GROUPS[state.g];
+  state.slots.forEach(function(s,i){
+    if(s.range&&!RANGES[s.range])s.range='';
+    if(s.range){var R=RANGES[s.range];
+      if(!(s.idx>=0&&s.idx<R.items.length&&okFor(g,R.items[s.idx]))){var n=nearestIdx(s.range,R.items[Math.min(Math.max(s.idx|0,0),R.items.length-1)].w,g);s.idx=n}}
+  });
+}
+try{var raw=localStorage.getItem(KEY);if(raw){var o=JSON.parse(raw);if(o&&o.v===1&&o.state){Object.keys(state).forEach(function(k){if(o.state[k]!==undefined)state[k]=o.state[k]})}}}catch(e){}
+normalize();
+if(!state.slots.length)resizeSlots();
+function save(){try{localStorage.setItem(KEY,JSON.stringify({v:1,state:state}))}catch(e){}}
+
+/* ---------- Calculs ---------- */
+function unitInfo(s){
+  if(!s.range)return null;var R=RANGES[s.range],x=R.items[s.idx];if(!x)return null;
+  var col=R.color?s.color:0,coul=R.color?(col?' NOIR':' BLANC'):(R.cassette?'':' BLANC');
+  var label=R.cassette?('Cassette DOJO '+x.model+' ('+kw(x.w)+' kW)'):('UI '+x.kw+'KW '+R.tag+coul);
+  return {R:R,x:x,label:label,ref:x.ref[col]||x.ref[0],pu:x.prix[col]!=null?x.prix[col]:x.prix[0],eco:x.eco};
+}
+function factor(fam){
+  var r=state.rem[fam].map(function(v){return Math.min(100,Math.max(0,val(v)))});
+  if(state.mode==='cascade')return r.reduce(function(a,v){return a*(1-v/100)},1);
+  return Math.max(0,1-(r[0]+r[1]+r[2])/100);
+}
+function compute(){
+  var g=GROUPS[state.g],lines=[],alerts=[],units=[];
+  lines.push({sec:'groupe',fam:'groupe',label:g.lib+(state.color?' DESIGN NOIR':' BLANC'),ref:g.ref[state.color],qty:1,pu:g.prix[state.color],eco:g.eco});
+  var pipes={'1/4':0,'3/8':0,'1/2':0},cabTotal=0,lenTotal=0,coolSum=0,count=0;
+  state.slots.forEach(function(s,i){
+    var u=unitInfo(s);if(!u)return;count++;
+    var room=s.room.trim()||('Pièce '+(i+1)),len=val(s.len),cl=val(s.cabLen);
+    var rec={i:i,room:room,u:u,s:s,len:len,cabLen:cl,items:[]};units.push(rec);
+    var add=function(l){lines.push(l);rec.items.push(l)};
+    add({sec:'ui',fam:'ui',label:u.label,sub:room,ref:u.ref,qty:1,pu:u.pu,eco:u.eco});
+    if(u.R.cassette)add({sec:'ui',fam:'ui',label:'Façade PB-620KB',sub:room,ref:FACADE.ref,qty:1,pu:FACADE.prix,eco:0});
+    ['remote','platine','cozy'].forEach(function(k){if(s[k])add({sec:'opt',fam:'opt',label:OPT[k].name,sub:room,ref:OPT[k].ref,qty:1,pu:OPT[k].prix,eco:OPT[k].eco})});
+    pipes['1/4']+=len;pipes[u.x.gaz]+=len;lenTotal+=len;cabTotal+=cl;coolSum+=u.x.w;
+    if(len<3||len>25)alerts.push(['warn',room+' : longueur de liaison hors de la plage 3 à 25 m par unité.']);
+    if(s.remote&&!u.R.cassette&&!s.platine)alerts.push(['warn',room+' : la télécommande filaire sur un mural demande la platine interface WK-B.']);
+  });
+  DIAMS.forEach(function(d){var m=pipes[d];if(m>0){var coil=val(state.cu[d].len)||25,n=Math.ceil(m/coil-1e-9),pu=val(state.cu[d].price);
+    lines.push({sec:'cu',fam:'inst',label:'Couronne cuivre '+d+'″ ('+coil+' m)',sub:num(m,1)+' m nécessaires',ref:'',qty:n,pu:pu,eco:0,missing:!pu})}});
+  var kI=Math.ceil(cabTotal),pI=val(state.cable['4G1,5']);
+  if(kI>0)lines.push({sec:'cab',fam:'inst',label:'Câble interconnexion '+cabName('4G1,5'),sub:'ext. / int.',ref:'',qty:kI,unit:'m',pu:pI,eco:0,missing:!pI});
+  var kA=Math.ceil(val(state.alimLen)),pA=val(state.cable[g.alim]);
+  if(kA>0)lines.push({sec:'cab',fam:'inst',label:'Câble alimentation '+cabName(g.alim),sub:'groupe extérieur',ref:'',qty:kA,unit:'m',pu:pA,eco:0,missing:!pA});
+  state.free.forEach(function(f){var q=val(f.qty),p=val(f.pu);if(f.label||q||p)lines.push({sec:'free',fam:'inst',label:f.label||'Ligne libre',qty:q,pu:p,eco:0})});
+
+  var fac={};FAMS.forEach(function(f){fac[f[0]]=factor(f[0])});
+  var cat=0,net=0,eco=0;
+  lines.forEach(function(l){l.cat=l.qty*l.pu;l.net=l.cat*fac[l.fam];l.puNet=l.pu*fac[l.fam];l.ecoT=l.qty*l.eco;cat+=l.cat;net+=l.net;eco+=l.ecoT});
+  var ht=net+eco,tva=ht*val(state.tva)/100;
+  if(!count)alerts.unshift(['warn','Aucune unité intérieure choisie.']);
+  if(coolSum>g.fr[2])alerts.push(['bad','Puissance cumulée des unités ('+num(coolSum)+' W) au-dessus du maximum du groupe ('+num(g.fr[2])+' W).']);
+  if(lenTotal>g.max)alerts.push(['bad','Longueur totale de liaisons ('+num(lenTotal,1)+' m) au-dessus du maximum du groupe ('+g.max+' m).']);
+  if(lenTotal>g.std&&lenTotal<=g.max)alerts.push(['info','Au-delà de '+g.std+' m de liaisons : charge additionnelle de R32, '+num((lenTotal-g.std)*20,0)+' g (20 g/m).']);
+  if(lines.some(function(l){return l.missing}))alerts.push(['info','Prix du cuivre et des câbles à saisir : ils ne figurent pas au catalogue.']);
+  return {g:g,units:units,lines:lines,alerts:alerts,pipes:pipes,cabTotal:cabTotal,lenTotal:lenTotal,coolSum:coolSum,count:count,fac:fac,cat:cat,net:net,eco:eco,ht:ht,tva:tva,ttc:ht+tva};
+}
+
+/* ---------- Rendu : groupe ---------- */
+function renderGroup(){
+  var c=state.color;
+  $('#gbtns').innerHTML=GROUPS.map(function(g,i){
+    return '<button type="button" class="gbtn" data-act="group" data-v="'+i+'" aria-pressed="'+(i===state.g)+'"><span class="kw">'+g.kw+' kW</span><span class="ty">'+g.type+' · '+g.nb+' unités · réf. '+g.ref[c]+'</span><span class="pr">'+eur(g.prix[c])+' HT</span></button>';
+  }).join('');
+  document.querySelectorAll('[data-act=gcolor]').forEach(function(b){b.setAttribute('aria-pressed',String(+b.dataset.v===c))});
+  var g=GROUPS[state.g];
+  var rows=[['Froid nominal (min / max)',num(g.fr[0])+' W ('+num(g.fr[1])+' / '+num(g.fr[2])+')'],
+    ['Chaud nominal (min / max)',num(g.ch[0])+' W ('+num(g.ch[1])+' / '+num(g.ch[2])+')'],
+    ['SEER / SCOP','8,5 / 4,6'],['Intensité nominale',num(g.I,1)+' A'],['Calibre disjoncteur',g.cal+' A'],
+    ['Câble alimentation',cabName(g.alim)],['Câble interconnexion',cabName('4G1,5')],
+    ['Liaisons standard / max',g.std+' m / '+g.max+' m'],['Par unité intérieure','3 à 25 m'],['Dénivelé max','15 m'],
+    ['Charge R32 d\'usine',num(g.charge)+' g'],['Charge additionnelle','20 g/m']];
+  $('#gspecs').innerHTML=rows.map(function(r){return '<div><dt>'+r[0]+'</dt><dd>'+r[1]+'</dd></div>'}).join('');
+  $('#gphoto').innerHTML=photo(IMG.groupe[c],'Groupe extérieur Atlantic '+(c?'design noir':'blanc'));
+  $('#gnotice').innerHTML=state.notice?'<div class="chip info">'+esc(state.notice)+'</div>':'';
+  $('#slotsHint').textContent=g.nb+' unités possibles sur ce groupe.';
+}
+
+/* ---------- Rendu : unités ---------- */
+function slotHTML(s,i){
+  var g=GROUPS[state.g],R=s.range?RANGES[s.range]:null;
+  var rOpts=[['','Aucune'],['premium','MURAO Premium'],['smart','MURAO Smart'],['access','MURAO Access'],['dojo','DOJO cassette 600×600']].map(function(o){return '<option value="'+o[0]+'"'+(o[0]===s.range?' selected':'')+'>'+o[1]+'</option>'}).join('');
+  var h='<div class="slot" id="slot-'+i+'"><div class="slot-top"><span class="slot-title">Unité '+(i+1)+'</span><span class="slot-price" id="sp-'+i+'"></span></div>';
+  h+=R?('<div class="slot-main"><div class="ph">'+photo(IMG[s.range][R.color?s.color:0],R.name)+'</div><div class="slot-form">'):'<div class="slot-form">';
+  h+='<div class="fields">';
+  h+='<label class="f">Pièce<input type="text" id="slot-'+i+'-room" data-slot="'+i+'" data-f="room" value="'+esc(s.room)+'" placeholder="Salon, chambre…"></label>';
+  h+='<label class="f">Gamme<select id="slot-'+i+'-range" data-slot="'+i+'" data-f="range">'+rOpts+'</select></label>';
+  if(R){
+    var po=compatIdx(s.range,g).map(function(k){var x=R.items[k];return '<option value="'+k+'"'+(k===s.idx?' selected':'')+'>'+kw(x.w)+' kW · '+num(x.btu)+' BTU</option>'}).join('');
+    h+='<label class="f">Puissance<select id="slot-'+i+'-idx" data-slot="'+i+'" data-f="idx">'+po+'</select></label>';
+    if(R.color)h+='<label class="f">Couleur<select id="slot-'+i+'-color" data-slot="'+i+'" data-f="color"><option value="0"'+(s.color?'':' selected')+'>Blanc</option><option value="1"'+(s.color?' selected':'')+'>Noir</option></select></label>';
+    h+='<label class="f">Liaison (m)<input type="number" min="0" step="0.5" id="slot-'+i+'-len" data-slot="'+i+'" data-f="len" value="'+esc(s.len)+'" inputmode="decimal"></label>';
+    h+='<label class="f">Câble interco (m)<input type="number" min="0" step="0.5" id="slot-'+i+'-cabLen" data-slot="'+i+'" data-f="cabLen" value="'+esc(s.cabLen)+'" inputmode="decimal"></label>';
+  }
+  h+='</div>';
+  if(R){
+    h+='<div class="checks"><label><input type="checkbox" id="slot-'+i+'-remote" data-slot="'+i+'" data-f="remote"'+(s.remote?' checked':'')+'>Télécommande filaire ('+eur(OPT.remote.prix)+')</label>';
+    if(!R.cassette){
+      h+='<label><input type="checkbox" id="slot-'+i+'-platine" data-slot="'+i+'" data-f="platine"'+(s.platine?' checked':'')+'>Platine WK-B ('+eur(OPT.platine.prix)+')</label>';
+      h+='<label><input type="checkbox" id="slot-'+i+'-cozy" data-slot="'+i+'" data-f="cozy"'+(s.cozy?' checked':'')+'>Wi-Fi CozyTouch ('+eur(OPT.cozy.prix)+')</label>';
+    }
+    h+='</div>';
+  }
+  h+=R?'</div></div>':'</div>';
+  return h+'</div>';
+}
+function renderSlots(){$('#slots').innerHTML=state.slots.map(slotHTML).join('')}
+function rerenderSlot(i){var el=$('#slot-'+i);if(!el)return;var t=document.createElement('div');t.innerHTML=slotHTML(state.slots[i],i);el.replaceWith(t.firstChild)}
+
+/* ---------- Rendu : remises, installation, lignes libres ---------- */
+function renderRem(){
+  var h='<thead><tr><th>Famille</th><th>Remise 1</th><th>Remise 2</th><th>Remise 3</th><th class="r">Total</th></tr></thead><tbody>';
+  FAMS.forEach(function(f){
+    h+='<tr><td>'+f[1]+'</td>';
+    for(var k=0;k<3;k++)h+='<td><input type="number" min="0" max="100" step="0.1" inputmode="decimal" placeholder="0" id="rem-'+f[0]+'-'+k+'" data-rem="'+f[0]+':'+k+'" value="'+esc(state.rem[f[0]][k])+'" aria-label="Remise '+(k+1)+' '+f[1]+'"></td>';
+    h+='<td class="r" id="reme-'+f[0]+'">0 %</td></tr>';
+  });
+  $('#remtable').innerHTML=h+'</tbody>';
+  $('#mode').value=state.mode;$('#tva').value=String(state.tva);
+}
+function renderInst(){
+  var h='<thead><tr><th>Diamètre</th><th class="r">Besoin (m)</th><th>Couronne</th><th class="r">Nb</th><th>Prix couronne € HT</th></tr></thead><tbody>';
+  DIAMS.forEach(function(d){
+    h+='<tr><td>'+(d==='1/4'?'1/4″ liquide':d+'″ gaz')+'</td><td class="r" id="cun-'+d+'">0</td><td><select data-culen="'+d+'" id="culen-'+d+'" aria-label="Longueur couronne '+d+'">'+[15,20,25,50].map(function(L){return '<option value="'+L+'"'+(+state.cu[d].len===L?' selected':'')+'>'+L+' m</option>'}).join('')+'</select></td><td class="r" id="cuq-'+d+'">0</td><td><input type="number" min="0" step="0.01" inputmode="decimal" placeholder="à saisir" id="cup-'+d+'" data-cuprice="'+d+'" value="'+esc(state.cu[d].price)+'"></td></tr>';
+  });
+  $('#cutable').innerHTML=h+'</tbody>';
+  var g=GROUPS[state.g];
+  var c='<thead><tr><th>Câble</th><th>Longueur (m)</th><th>Prix € HT / m</th></tr></thead><tbody>';
+  c+='<tr><td>Interconnexion ext. / int. '+cabName('4G1,5')+'</td><td id="cabi">0</td><td><input type="number" min="0" step="0.01" inputmode="decimal" placeholder="à saisir" id="cab-4G1,5" data-cable="4G1,5" value="'+esc(state.cable['4G1,5'])+'"></td></tr>';
+  c+='<tr><td>Alimentation du groupe '+cabName(g.alim)+' (disjoncteur '+g.cal+' A)</td><td><input type="number" min="0" step="1" inputmode="decimal" id="alimlen" value="'+esc(state.alimLen)+'"></td><td><input type="number" min="0" step="0.01" inputmode="decimal" placeholder="à saisir" id="cab-'+g.alim+'" data-cable="'+g.alim+'" value="'+esc(state.cable[g.alim])+'"></td></tr>';
+  $('#cabtable').innerHTML=c+'</tbody>';
+}
+function renderFree(){
+  var h='<thead><tr><th>Désignation</th><th>Qté</th><th>Prix cat. € HT</th><th></th></tr></thead><tbody>';
+  if(!state.free.length)h+='<tr><td colspan="4" class="hint">Aucune ligne libre.</td></tr>';
+  state.free.forEach(function(f,i){
+    h+='<tr><td><input type="text" style="width:220px" id="free-'+i+'-label" data-free="'+i+':label" value="'+esc(f.label)+'" aria-label="Désignation"></td><td><input type="number" min="0" step="1" style="width:70px" id="free-'+i+'-qty" data-free="'+i+':qty" value="'+esc(f.qty)+'" aria-label="Quantité"></td><td><input type="number" min="0" step="0.01" id="free-'+i+'-pu" data-free="'+i+':pu" value="'+esc(f.pu)+'" aria-label="Prix"></td><td><button type="button" class="btn sm" data-act="delfree" data-v="'+i+'">Retirer</button></td></tr>';
+  });
+  $('#freetable').innerHTML=h+'</tbody>';
+}
+
+/* ---------- Rafraîchissement du calcul ---------- */
+function refresh(){
+  var C=compute();
+  FAMS.forEach(function(f){var e=$('#reme-'+f[0]);if(e)e.textContent=num((1-C.fac[f[0]])*100,1)+' %'});
+  state.slots.forEach(function(s,i){var e=$('#sp-'+i),u=unitInfo(s);if(!e)return;
+    e.innerHTML=u?('réf. '+u.ref+' · catalogue <b>'+eur(u.pu)+'</b> · net <b>'+eur(u.pu*C.fac.ui)+'</b>'):'Emplacement libre'});
+  DIAMS.forEach(function(d){var m=C.pipes[d],coil=val(state.cu[d].len)||25;
+    $('#cun-'+d).textContent=m>0?num(m,1):'—';$('#cuq-'+d).textContent=m>0?Math.ceil(m/coil-1e-9):'—'});
+  $('#cabi').textContent=C.cabTotal>0?num(C.cabTotal,1):'—';
+  $('#powerline').innerHTML='<div class="chip info">Puissance froid cumulée des unités : <b>'+num(C.coolSum)+' W</b> pour un groupe de '+num(C.g.fr[0])+' W nominal (maximum '+num(C.g.fr[2])+' W). Liaisons : <b>'+num(C.lenTotal,1)+' m</b> sur '+C.g.max+' m maximum.</div>';
+  $('#alerts').innerHTML=C.alerts.map(function(a){return '<div class="chip '+a[0]+'">'+esc(a[1])+'</div>'}).join('');
+  var h='';
+  SECS.forEach(function(s){
+    var ls=C.lines.filter(function(l){return l.sec===s[0]});if(!ls.length)return;
+    h+='<h3 class="sec-h">'+s[1]+'</h3>';
+    ls.forEach(function(l){
+      var u=l.unit||'';
+      var sub=[l.sub,l.ref?('réf. '+l.ref):'',l.qty+(u?' '+u:'')+' × '+eur(l.pu)+' cat.'+(l.puNet<l.pu?' → '+eur(l.puNet)+' net':''),l.ecoT?('éco-part. '+eur(l.ecoT)):''].filter(Boolean).join(' · ');
+      h+='<div class="ln"><div class="ln-main"><span class="ln-t">'+esc(l.label)+(l.missing?'<span class="tag">prix à saisir</span>':'')+'</span><span class="ln-v">'+eur(l.net)+'</span></div><div class="ln-sub">'+esc(sub)+'</div></div>';
+    });
+  });
+  $('#lines').innerHTML=h;
+  $('#sumcount').textContent=C.g.kw+' kW · '+C.count+' unité'+(C.count>1?'s':'');
+  $('#totals').innerHTML='<div class="mut"><span>Total catalogue HT</span><span>'+eur(C.cat)+'</span></div>'+
+    '<div class="mut"><span>Remises</span><span>− '+eur(C.cat-C.net)+'</span></div>'+
+    '<div><span>Total net HT</span><b>'+eur(C.net)+'</b></div>'+
+    '<div class="mut"><span>Éco-participation</span><span>'+eur(C.eco)+'</span></div>'+
+    '<div><span>Total HT avec éco-part.</span><b>'+eur(C.ht)+'</b></div>'+
+    '<div class="mut"><span>TVA '+num(val(state.tva),1)+' %</span><span>'+eur(C.tva)+'</span></div>'+
+    '<div class="big"><span>Total TTC</span><span>'+eur(C.ttc)+'</span></div>';
+  $('#barTotal').textContent=eur(C.ht);
+  renderRecap(C);
+  save();
+}
+function lineBlock(items){
+  var cat=0,net=0,eco=0,h='<div class="rc-l">';
+  items.forEach(function(l){cat+=l.cat;net+=l.net;eco+=l.ecoT;
+    h+='<div><span>'+esc(l.label)+(l.ref?' <small class="rc-m">('+l.ref+')</small>':'')+'</span><span class="n">'+eur(l.cat)+'</span></div>'});
+  if(net<cat-0.005)h+='<div class="tt"><span>Net après remise</span><span class="n">'+eur(net)+'</span></div>';
+  else h+='<div class="tt"><span>Net HT</span><span class="n">'+eur(net)+'</span></div>';
+  if(eco>0)h+='<div><span class="rc-m">Éco-participation</span><span class="n rc-m">'+eur(eco)+'</span></div>';
+  return h+'</div>';
+}
+function renderRecap(C){
+  var g=C.g,c=state.color,gl=C.lines[0];
+  $('#rcdate').textContent='Devis du '+new Date().toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'})+' · prix en € HT';
+  var h='<div class="rc-card main"><div class="ph">'+photo(IMG.groupe[c],'Groupe extérieur Atlantic '+(c?'design noir':'blanc'))+'</div><span class="rc-k">Groupe extérieur</span><div class="rc-t">'+esc(gl.label)+'</div>'+
+    '<div class="rc-m">réf. '+gl.ref+' · '+g.type+' · froid '+num(g.fr[0])+' W, chaud '+num(g.ch[0])+' W · SEER 8,5 · SCOP 4,6 · disjoncteur '+g.cal+' A · '+cabName(g.alim)+'</div>'+lineBlock([gl])+'</div>';
+  C.units.forEach(function(r){var R=r.u.R,x=r.u.x;
+    h+='<div class="rc-card"><div class="ph">'+photo(IMG[r.s.range][R.color?r.s.color:0],R.name)+'</div><span class="rc-k">'+esc(r.room)+'</span><div class="rc-t">'+esc(r.u.label)+'</div>'+
+      '<div class="rc-m">réf. '+r.u.ref+' · froid '+num(x.w)+' W, chaud '+num(x.ch)+' W · '+num(x.btu)+' BTU · gaz '+x.gaz+'″, liquide 1/4″ · liaison '+num(r.len,1)+' m</div>'+lineBlock(r.items)+'</div>';
+  });
+  if(!C.units.length)h+='<div class="rc-card"><span class="rc-m">Aucune unité intérieure choisie.</span></div>';
+  $('#rcunits').innerHTML=h;
+  var inst=C.lines.filter(function(l){return l.sec==='cu'||l.sec==='cab'||l.sec==='free'});
+  var t='<thead><tr><th>Désignation</th><th>Qté</th><th>Net HT</th></tr></thead><tbody>';
+  if(!inst.length)t+='<tr><td colspan="3" class="hint">Aucune ligne.</td></tr>';
+  inst.forEach(function(l){t+='<tr><td style="white-space:normal">'+esc(l.label)+(l.missing?'<span class="tag">prix à saisir</span>':'')+'</td><td>'+l.qty+(l.unit?' '+l.unit:'')+'</td><td>'+eur(l.net)+'</td></tr>'});
+  $('#rcinst').innerHTML=t+'</tbody>';
+  var r='<thead><tr><th>Famille</th><th>R1</th><th>R2</th><th>R3</th><th>Total</th></tr></thead><tbody>';
+  FAMS.forEach(function(f){r+='<tr><td style="white-space:normal">'+f[1]+'</td>'+state.rem[f[0]].map(function(v){return '<td>'+(val(v)?num(val(v),1)+' %':'—')+'</td>'}).join('')+'<td>'+num((1-C.fac[f[0]])*100,1)+' %</td></tr>'});
+  $('#rcrem').innerHTML=r+'</tbody>';
+  var o=[['Total catalogue HT',eur(C.cat)],['Remises','− '+eur(C.cat-C.net)],['Total net HT',eur(C.net)],['Éco-participation',eur(C.eco)],['Total HT avec éco-part.',eur(C.ht)],['TVA '+num(val(state.tva),1)+' %',eur(C.tva)]];
+  var tt='<tbody>'+o.map(function(x){return '<tr><td>'+x[0]+'</td><td class="r">'+x[1]+'</td></tr>'}).join('')+'<tr class="big"><td>Total TTC</td><td class="r">'+eur(C.ttc)+'</td></tr></tbody>';
+  $('#rctot').innerHTML=tt;
+}
+function recapText(){
+  var C=compute(),t=['DEVIS MULTI-SPLIT MURAO — '+C.g.type+' '+C.g.kw+' kW'].concat(state.client.trim()?['Client / chantier : '+state.client.trim()]:[],['Prix en € HT, tarif catalogue pp. 557-559','']);
+  C.lines.forEach(function(l){t.push('- '+l.label+(l.sub?' ['+l.sub+']':'')+(l.ref?' (réf. '+l.ref+')':'')+' : '+l.qty+(l.unit?' '+l.unit:'')+' x '+eur(l.pu)+' cat. = '+eur(l.net)+' net')});
+  t.push('','Total catalogue HT : '+eur(C.cat),'Remises : -'+eur(C.cat-C.net),'Total net HT : '+eur(C.net),'Éco-participation : '+eur(C.eco),'Total HT : '+eur(C.ht),'TVA '+num(val(state.tva),1)+' % : '+eur(C.tva),'Total TTC : '+eur(C.ttc));
+  return t.join('\n');
+}
+
+/* ---------- Actions ---------- */
+function setGroup(i){
+  var before=state.slots.map(function(s){return s.range?RANGES[s.range].items[s.idx]:null});
+  state.g=i;state.notice='';resizeSlots();normalize();
+  var moved=[];state.slots.forEach(function(s,k){if(before[k]&&s.range&&RANGES[s.range].items[s.idx]!==before[k])moved.push(k+1)});
+  if(moved.length)state.notice='Unité '+moved.join(', ')+' : puissance ajustée, l\'unité choisie n\'existe pas avec ce groupe.';
+  renderGroup();renderSlots();renderInst();refresh();
+}
+var view='conf';
+function setView(v){
+  view=v;
+  $('#view-conf').hidden=v!=='conf';
+  $('#recap-sec').hidden=v!=='recap';
+  $('#barBtn').textContent=v==='conf'?'Récapitulatif':'← Configuration';
+  try{window.scrollTo(0,0);document.querySelector('header').scrollIntoView()}catch(e){}
+}
+function onClick(e){
+  var b=e.target.closest('[data-act]');if(!b)return;var a=b.dataset.act,v=b.dataset.v;
+  if(a==='group')setGroup(+v);
+  else if(a==='gcolor'){state.color=+v;state.slots.forEach(function(s){if(s.range==='premium')s.color=state.color});renderGroup();renderSlots();refresh()}
+  else if(a==='copyrem'){var r=state.rem.groupe.slice();['ui','opt','inst'].forEach(function(f){state.rem[f]=r.slice()});renderRem();refresh()}
+  else if(a==='addfree'){state.free.push({label:'',qty:1,pu:''});renderFree();refresh()}
+  else if(a==='delfree'){state.free.splice(+v,1);renderFree();refresh()}
+  else if(a==='view')setView(v);
+  else if(a==='toggle')setView(view==='conf'?'recap':'conf');
+  else if(a==='copy'){
+    var text=recapText(),ta=$('#recap'),ok=function(){$('#toast').textContent='Récapitulatif copié.'};
+    ta.value=text;ta.hidden=false;
+    var fb=function(){ta.focus();ta.select();$('#toast').textContent='Copie bloquée, texte sélectionné.'};
+    try{navigator.clipboard.writeText(text).then(ok,fb)}catch(err){fb()}
+  }
+}
+function onField(e){
+  var t=e.target,choice=t.tagName==='SELECT'||t.type==='checkbox';
+  if((e.type==='change')!==choice)return;
+  var d=t.dataset;
+  if(d.slot!==undefined){
+    var i=+d.slot,f=d.f,s=state.slots[i],g=GROUPS[state.g];
+    if(f==='room')s.room=t.value;
+    else if(f==='len'){s.len=t.value;if(s.cabLinked){s.cabLen=t.value;var c=$('#slot-'+i+'-cabLen');if(c)c.value=t.value}}
+    else if(f==='cabLen'){s.cabLen=t.value;s.cabLinked=false}
+    else if(f==='range'){var prev=s.range?RANGES[s.range].items[s.idx].w:2100;s.range=t.value;if(s.range){s.idx=nearestIdx(s.range,prev,g);if(s.range==='premium')s.color=state.color}else{s.remote=s.platine=s.cozy=false}
+      if(s.range==='dojo'){s.platine=false;s.cozy=false}rerenderSlot(i)}
+    else if(f==='idx')s.idx=+t.value;
+    else if(f==='color'){s.color=+t.value;rerenderSlot(i)}
+    else if(f==='remote'){s.remote=t.checked;s.platine=t.checked&&s.range!=='dojo';rerenderSlot(i)}
+    else if(f==='platine')s.platine=t.checked;
+    else if(f==='cozy')s.cozy=t.checked;
+    refresh();return;
+  }
+  if(t.id==='client'){state.client=t.value;save();return}
+  if(d.rem){var p=d.rem.split(':');state.rem[p[0]][+p[1]]=t.value;refresh();return}
+  if(d.cuprice){state.cu[d.cuprice].price=t.value;refresh();return}
+  if(d.culen){state.cu[d.culen].len=+t.value;refresh();return}
+  if(d.cable!==undefined&&d.cable!==''){state.cable[d.cable]=t.value;refresh();return}
+  if(d.free){var q=d.free.split(':');state.free[+q[0]][q[1]]=t.value;refresh();return}
+  if(t.id==='alimlen'){state.alimLen=t.value;refresh();return}
+  if(t.id==='mode'){state.mode=t.value;refresh();return}
+  if(t.id==='tva'){state.tva=val(t.value);refresh();return}
+}
+document.addEventListener('click',onClick);
+document.addEventListener('input',onField);
+document.addEventListener('change',onField);
+
+$('#client').value=state.client||'';
+renderGroup();renderSlots();renderRem();renderInst();renderFree();refresh();
+})();
+</script>
+
+</body>
+</html>
