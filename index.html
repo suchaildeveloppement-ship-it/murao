@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<style>:root{color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
-<title>Configurateur MURAO Multi-splits</title>
+<style>:root{color-scheme:light}body{margin:0}img{max-width:100%}</style>
+<title>Configurateur Multi-splits</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Poppins:wght@500;600&display=swap">
 <style>
@@ -24,6 +24,7 @@
   --green:#5cbf88; --on-green:#0a1a11; --soft:#1c3828; --field:#101e17;
   --warn:#f0b66b; --warn-bg:#3a2b15; --bad:#f2958f; --bad-bg:#3c1c1b; --info:#8ccae3; --info-bg:#173040; color-scheme:dark;}
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 body{background:var(--bg);color:var(--ink);font:15px/1.45 var(--f-body);padding-inline:16px;padding-block:20px 84px;font-variant-numeric:tabular-nums}
 .wrap{max-width:1240px;margin:0 auto}
 h1,h2,h3{font-family:var(--f-head);font-weight:600;margin:0;text-wrap:balance}
@@ -50,7 +51,10 @@ button{font:inherit;color:inherit;cursor:pointer}
 .btn.sm{height:32px;padding:0 10px;font-size:13px}
 .seg{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden}
 .seg button{border:0;background:var(--field);padding:0 14px;height:36px;font-weight:500}
+.seg button:disabled{opacity:.45;cursor:not-allowed}
 .seg button[aria-pressed=true]{background:var(--green);color:var(--on-green)}
+.ggrp{margin-bottom:12px}.ggrp h4{margin:0 0 6px;font:600 13px/1.2 var(--f-head);color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.qlist{display:flex;flex-direction:column;gap:8px}.qitem{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;justify-content:space-between;border:1px solid var(--line);background:var(--field);border-radius:8px;padding:10px 12px}.qitem[data-cur=true]{border-color:var(--green)}.qitem b{font-weight:600}.qitem .sub{color:var(--muted);font-size:13px}.qitem .btns{display:flex;gap:6px;flex-wrap:wrap}
 .gridg{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
 .gbtn{text-align:left;border:1px solid var(--line);background:var(--field);border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:2px}
 .gbtn[aria-pressed=true]{border-color:var(--green);box-shadow:inset 0 0 0 1px var(--green);background:var(--soft)}
@@ -125,27 +129,54 @@ textarea{width:100%;min-height:150px;border:1px solid var(--line);border-radius:
 .rc-l .tt{border-top:1px solid var(--line);padding-top:4px;margin-top:2px;font-weight:600}
 .rc-two{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
 .rc-two table th:nth-child(n+2),.rc-two table td:nth-child(n+2){text-align:right}
+.rc-var{display:flex;flex-direction:column;gap:12px;border-top:1px solid var(--line);padding-top:16px}
+.rc-cmp th,.rc-cmp td{white-space:normal;min-width:130px;vertical-align:top}
+.rc-cmp th:first-child,.rc-cmp td:first-child{min-width:150px;font-weight:500}
+.rc-cmp th:nth-child(n+2),.rc-cmp td:nth-child(n+2){text-align:right}
+.rc-cmp td.best{color:var(--green);font-weight:600}
+.rc-cmp .btns{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap}
+.rc-det{border:1px solid var(--line);border-radius:8px;padding:10px 12px;background:var(--field)}
+.rc-det summary{cursor:pointer;font-weight:600}
+.rc-notes{margin:0 0 12px;padding-left:18px;color:var(--muted);font-size:13.5px}
+.rc-det[open] summary{margin-bottom:12px}
+.rc-det .rc-grid{margin-bottom:14px}
 .rc-tot td:first-child{font-weight:500}
 .rc-tot tr.big td{font:600 16px var(--f-head);border-bottom:0;border-top:2px solid var(--green)}
 </style>
-</head>
-<body>
+
 <div class="wrap">
   <header>
-    <h1>Configurateur MURAO Multi-splits</h1>
-    <p class="lead">Tarif catalogue pages 557 à 559, prix en € HT. Choisissez un groupe, associez les unités intérieures, appliquez jusqu'à trois remises et obtenez le devis. Un exemple est pré-rempli, modifiez-le.</p>
+    <h1>Configurateur Multi-splits</h1>
+    <p class="lead" id="lead"></p>
   </header>
 
   <div class="app" id="view-conf">
     <div class="col">
+      <section class="panel" id="p-brand">
+        <div class="panel-head"><h2>Marque</h2>
+          <div class="seg" role="group" aria-label="Marque">
+            <button type="button" data-act="brand" data-v="atlantic" aria-pressed="true">Atlantic MURAO</button>
+            <button type="button" data-act="brand" data-v="sinclair" aria-pressed="false">Sinclair</button>
+            <button type="button" data-act="brand" data-v="midea" aria-pressed="false">Midea</button>
+          </div>
+        </div>
+        <div class="panel-head"><h2>Installation</h2>
+          <div class="seg" role="group" aria-label="Type d'installation">
+            <button type="button" data-act="kind" data-v="multi" aria-pressed="true">Multi-split</button>
+            <button type="button" data-act="kind" data-v="mono" aria-pressed="false">Mono-split</button>
+          </div>
+        </div>
+        <p class="hint" id="khint"></p>
+      </section>
+
       <section class="panel" id="p-group">
         <div class="panel-head"><h2>Groupe extérieur</h2>
-          <div class="seg" role="group" aria-label="Couleur du groupe">
+          <div class="seg" id="gseg" role="group" aria-label="Couleur du groupe">
             <button type="button" data-act="gcolor" data-v="0" aria-pressed="true">Blanc</button>
             <button type="button" data-act="gcolor" data-v="1" aria-pressed="false">Design noir</button>
           </div>
         </div>
-        <div class="gridg" id="gbtns"></div>
+        <div id="gbtns"></div>
         <div id="gnotice"></div>
         <div class="gmain"><div class="ph" id="gphoto"></div><dl class="specs" id="gspecs"></dl></div>
       </section>
@@ -154,6 +185,11 @@ textarea{width:100%;min-height:150px;border:1px solid var(--line);border-radius:
         <div class="panel-head"><h2>Unités intérieures</h2><p class="hint" id="slotsHint"></p></div>
         <div id="slots" style="display:flex;flex-direction:column;gap:12px"></div>
         <div id="powerline"></div>
+      </section>
+
+      <section class="panel" id="p-px" hidden>
+        <div class="panel-head"><h2>Prix à saisir</h2><p class="hint">Ces références n'ont pas de prix dans les documents fournis. Saisissez-les en € HT, ils sont gardés dans ce navigateur.</p></div>
+        <div class="tablewrap"><table id="pxtable"></table></div>
       </section>
 
       <section class="panel" id="p-rem">
@@ -209,6 +245,19 @@ textarea{width:100%;min-height:150px;border:1px solid var(--line);border-radius:
       <div><h3>Remises appliquées</h3><div class="tablewrap"><table id="rcrem"></table></div></div>
     </div>
     <div class="tablewrap"><table class="rc-tot" id="rctot"></table></div>
+    <div class="rc-var">
+      <h3>Variantes</h3>
+      <p class="hint">La colonne « Équivalent » se calcule seule dans l'autre marque : Premium devient Marvin, Access et Smart deviennent Keyon, et inversement. Le groupe est le plus proche à nombre de postes égal. La cassette DOJO n'a pas d'équivalent Sinclair. « Enregistrer » garde l'équivalent, « Enregistrer en variante » garde la configuration en cours.</p>
+      <div class="row"><label class="f" style="max-width:320px;width:100%">Nom de la variante<input type="text" id="varname" placeholder="Ex. Sinclair 3 pièces"></label><button type="button" class="btn pri" data-act="addvar">Enregistrer en variante</button><span class="toast" id="vartoast" role="status"></span></div>
+      <div class="tablewrap"><table class="rc-cmp" id="rcvartable"></table></div>
+      <div id="rcvardetail" style="display:flex;flex-direction:column;gap:10px"></div>
+    </div>
+    <div class="rc-var" id="qlib">
+      <h3>Devis clients enregistrés</h3>
+      <p class="hint">Le devis en cours (groupe, unités, remises, cuivre, câbles et toutes ses variantes) est enregistré sous le nom du client saisi plus haut. Les devis restent dans ce navigateur : utilisez « Exporter » pour les sauvegarder ou les passer sur un autre appareil.</p>
+      <div class="row"><button type="button" class="btn pri" data-act="qsave">Enregistrer le devis</button><button type="button" class="btn" data-act="qsavenew">Enregistrer comme nouveau devis</button><button type="button" class="btn" data-act="qnew">Nouveau devis vide</button><button type="button" class="btn" data-act="qexport">Exporter</button><button type="button" class="btn" data-act="qimportbtn">Importer</button><input type="file" id="qimport" accept="application/json,.json" hidden><span class="toast" id="qtoast" role="status"></span></div>
+      <div class="qlist" id="qlist"></div>
+    </div>
     <div class="row"><button type="button" class="btn pri" data-act="copy">Copier le récapitulatif en texte</button><span class="toast" id="toast" role="status"></span></div>
     <textarea id="recap" hidden readonly aria-label="Récapitulatif du devis en texte"></textarea>
   </section>
@@ -220,7 +269,7 @@ textarea{width:100%;min-height:150px;border:1px solid var(--line);border-radius:
 (function(){
 'use strict';
 var KEY='murao-configurateur-v1';
-var $=function(s,r){return (r||document).querySelector(s)};
+var $=function(s,r){if(!r&&/^#[^\s.\[>:,]+$/.test(s)||!r&&/^#[^\s]*\/[^\s]*$/.test(s))return document.getElementById(s.slice(1));return (r||document).querySelector(s)};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
 var FR=new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'});
 var eur=function(n){return FR.format(n)};
@@ -229,7 +278,7 @@ var kw=function(w){return (w/1000).toLocaleString('fr-FR',{maximumFractionDigits
 var val=function(v){var n=parseFloat(String(v).replace(',','.'));return isFinite(n)?n:0};
 
 /* ---------- Données catalogue (pages 557 à 559) ---------- */
-var GROUPS=[
+var GROUPS_A=[
  {nb:2,type:'Bi-split',kw:'4',w:4000,lib:'UE MULTI 2UI 4KW MURAO',ref:[872191,872205],prix:[1837,2020],eco:7.69,fr:[4000,1500,4600],ch:[4600,1300,5200],I:9,cal:16,alim:'3G1,5',std:20,max:50,charge:950},
  {nb:2,type:'Bi-split',kw:'5',w:5000,lib:'UE MULTI 2UI 5KW MURAO',ref:[872192,872206],prix:[1978,2176],eco:7.69,fr:[5000,1800,5300],ch:[5600,1500,6100],I:9.8,cal:16,alim:'3G1,5',std:20,max:50,charge:1050},
  {nb:3,type:'Tri-split',kw:'5,4',w:5400,lib:'UE MULTI 3UI 5,4KW MURAO',ref:[872193,872207],prix:[2812,3094],eco:10.02,fr:[5400,2100,6600],ch:[7000,1700,7200],I:10.8,cal:20,alim:'3G2,5',std:30,max:50,charge:1400},
@@ -238,8 +287,8 @@ var GROUPS=[
  {nb:5,type:'5 postes',kw:'9,5',w:9500,lib:'UE MULTI 5UI 9,5KW MURAO',ref:[872196,872210],prix:[4553,5008],eco:10.02,fr:[9500,3200,11000],ch:[9600,4400,11500],I:18.5,cal:25,alim:'3G4',std:40,max:80,charge:2200}
 ];
 function it(w,btu,ch,gaz,kwl,ref,prix,eco,model){return {w:w,btu:btu,ch:ch,gaz:gaz,kw:kwl,ref:ref,prix:prix,eco:eco,model:model}}
-var RANGES={
- premium:{name:'MURAO Premium',tag:'MURAO PREMIUM',color:true,items:[
+var RANGES_A={
+ premium:{name:'MURAO Premium',tag:'MURAO PREMIUM',colors:['Blanc','Noir'],items:[
   it(1500,5000,2000,'3/8','1,5',[873974,873980],[568,625],1.75),
   it(2100,7000,2600,'3/8','2,1',[873975,873981],[600,660],1.75),
   it(2600,9000,3000,'3/8','2,6',[873976,873982],[632,695],1.75),
@@ -263,29 +312,174 @@ var RANGES={
   it(5000,18000,5500,'1/2','5',[873939],[1509],2.2,'AB 018 DB.UI')]}
 };
 var FACADE={ref:873948,prix:171};
-var IMG={groupe:['img/groupe-blanc.jpg','img/groupe-noir.jpg'],premium:['img/premium-blanc.jpg','img/premium-noir.jpg'],smart:['img/smart.jpg'],access:['img/access.jpg'],dojo:['img/dojo.jpg']};
+var IMG={groupe:['img/groupe-blanc.jpg','img/groupe-noir.jpg'],premium:['img/premium-blanc.jpg','img/premium-noir.jpg'],smart:['img/smart.jpg'],access:['img/access.jpg'],dojo:['img/dojo.jpg'],
+ sgroupe:['img/sinclair-groupe.jpg'],mgroupe:['img/midea-groupe.jpg'],breezeless:['img/midea-breezeless.jpg'],solstice:['img/midea-solstice-blanc.jpg','img/midea-solstice-noir.jpg'],keyon:['img/sinclair-keyon.jpg'],marvin:['img/sinclair-marvin-blanc.jpg','img/sinclair-marvin-navy.jpg','img/sinclair-marvin-argent.jpg','img/sinclair-marvin-champagne.jpg','img/sinclair-marvin-navy.jpg']};
 var photo=function(src,alt){return '<img src="'+src+'" alt="'+esc(alt)+'" loading="lazy">'};
-var OPT={remote:{ref:875156,prix:311,eco:0.14,name:'Télécommande filaire LUMAO YR-E16C'},platine:{ref:875149,prix:203,eco:0.14,name:'Platine interface WK-B'},cozy:{ref:500285,prix:50,eco:0.14,name:'CozyBox Atlantic (CozyTouch, Wi-Fi)'}};
+var OPT_A={remote:{ref:875156,prix:311,eco:0.14,name:'Télécommande filaire LUMAO YR-E16C',lab:'Télécommande filaire',cas:true},platine:{ref:875149,prix:203,eco:0.14,name:'Platine interface WK-B',lab:'Platine WK-B'},cozy:{ref:500285,prix:50,eco:0.14,name:'CozyBox Atlantic (CozyTouch, Wi-Fi)',lab:'Wi-Fi CozyTouch'}};
 var FAMS=[['groupe','Groupe extérieur'],['ui','Unités intérieures'],['opt','Options (télécommande, platine, Wi-Fi)'],['inst','Cuivre, câbles, lignes libres']];
 var SECS=[['groupe','Groupe extérieur'],['ui','Unités intérieures'],['opt','Options'],['cu','Cuivre'],['cab','Câbles'],['free','Lignes libres']];
-var DIAMS=['1/4','3/8','1/2'];
+var DIAMS=['1/4-3/8','1/4-1/2','3/8-1/2','3/8-5/8','1/4-5/8'];
+function newCu(){var o={};DIAMS.forEach(function(d){o[d]={len:25,price:''}});return o}
+function fixCu(){if(!state.cu||!state.cu['1/4-3/8']||!state.cu['1/4-5/8'])state.cu=newCu()}
 var CABLES=['4G1,5','3G1,5','3G2,5','3G4'];
 var cabName=function(k){return k.replace('G','G x ')+' mm²'};
 
+
+/* ---------- Sinclair (fiches techniques pp. 24, 33, 34, sans prix) ---------- */
+var PXS={'SOH-09BIK2':575,'SOH-12BIK2':630,'SOH-18BIK':1133,'SOH-24BIK':1516,'SOH-07BIM':737,'SOH-09BIM':769,'SOH-12BIM':877,'SOH-18BIM':1509,'SOH-24BIM':2020,'MV-E14BI2':1410,'MV-E18BI2':1542,'MV-E21BI2':2073,'MV-E24BI2':2316,'MV-E28BI2':2856,'MV-E36BI2':3570,'MV-E42BI2':4043,
+ 'SIH-07BIK':326,'SIH-09BIK':364,'SIH-12BIK':399,'SIH-18BIK':518,'SIH-24BIK':632};
+function sg(nb,type,kw,w,model,ref,fr,ch,cal,alim,std,max,charge,seer,scop,lmax,deniv,adapt){return {nb:nb,type:type,kw:kw,w:w,model:model,ref:model,prix:PXS[model],fr:fr,ch:ch,cal:cal,alim:alim,std:std,max:max,charge:charge,seer:seer,scop:scop,lmax:lmax,deniv:deniv,adapt:adapt||''}}
+var GROUPS_S=[
+ sg(2,'Bi-split','4,1',4100,'MV-E14BI2','QCSH2214B',[4100,2100,4400],[4400,2500,5400],16,'3G1,5',10,40,750,'7,20 / A++','4,20 / A+',20,15),
+ sg(2,'Bi-split','5,3',5300,'MV-E18BI2','QCSH2218B',[5300,2100,5800],[5650,2600,6000],16,'3G1,5',10,40,900,'6,60 / A++','4,00 / A+',20,15),
+ sg(3,'Tri-split','6,1',6100,'MV-E21BI2','QCSH3221B',[6100,2200,7300],[6500,3600,8500],16,'3G2,5',30,60,1600,'7,80 / A++','4,30 / A+',20,15,'3/8″-1/2″ x1'),
+ sg(3,'Tri-split','7,1',7100,'MV-E24BI2','QCSH3224B',[7100,2300,8500],[8600,3700,8800],16,'3G2,5',30,60,1700,'7,10 / A++','4,30 / A+',20,15,'3/8″-1/2″ x2'),
+ sg(4,'Quadri-split','8',8000,'MV-E28BI2','QCSH4228B',[8000,2300,10300],[9500,3700,10300],20,'3G2,5',40,70,1800,'7,20 / A++','4,20 / A+',20,15,'3/8″-1/2″ x2'),
+ sg(4,'Quadri-split','10,6',10600,'MV-E36BI2','QCSH4236B',[10600,2600,12000],[12000,3000,14000],25,'3G4',40,80,2400,'7,20 / A++','4,00 / A+',25,25,'1/4″-3/8″ x2, 3/8″-1/2″ x3, 3/8″-5/8″ x2'),
+ sg(5,'5 postes','12,1',12100,'MV-E42BI2','QCSH5242B',[12100,2600,15200],[13000,3000,15500],25,'3G4',50,100,2400,'ηs 289 %','ηs 165 %',25,25,'1/4″-3/8″ x3, 3/8″-1/2″ x3, 3/8″-5/8″ x2')
+];
+function si(w,btu,ch,gaz,kwl,model){return {w:w,btu:btu,ch:ch,gaz:gaz,kw:kwl,model:model,ref:[model],prix:[PXS[model]],eco:0}}
+function mv(w,btu,ch,gaz,kwl,t,prix){var m=['W','N','S','C','B'].map(function(c){return 'SIH-'+t+'BIM'+c});return {w:w,btu:btu,ch:ch,gaz:gaz,kw:kwl,model:m,ref:m,prix:prix,eco:0}}
+var RANGES_S={
+ keyon:{name:'KEYON mural',note:'Télécommande sans fil YAP1F2 fournie. Fiche mono-split page 24 : vérifiez la compatibilité multi-split (la page 33 cite le modèle SIH-09BIT). Le 07 est compté à 2,1 kW, valeur non indiquée dans les fiches.',mk:function(x){return 'Mural KEYON '+x.model+' ('+kw(x.w)+' kW)'},items:[
+  si(2100,7000,2200,'3/8','2,1','SIH-07BIK'),
+  si(2700,9000,2800,'3/8','2,7','SIH-09BIK'),
+  si(3200,12000,3400,'3/8','3,2','SIH-12BIK'),
+  si(4600,18000,5200,'3/8','4,6','SIH-18BIK'),
+  si(6200,24000,6500,'1/2','6,2','SIH-24BIK')]},
+ marvin:{name:'MARVIN mural',colors:['Blanc','Bleu navy','Argent','Champagne','Noir'],note:'Wi-Fi et Bluetooth de série, télécommande sans fil YBE1F fournie.',mk:function(x,c){return 'Mural MARVIN '+x.model[0]+' '+c+' ('+kw(x.w)+' kW)'},items:[
+  mv(2700,9000,3000,'3/8','2,7','09',[468,520,520,520,520]),
+  mv(3500,12000,3800,'3/8','3,5','12',[532,592,592,592,592]),
+  mv(5300,18000,5400,'1/2','5,3','18',[677,752,752,752,752]),
+  mv(7100,24000,7300,'5/8','7,1','24',[842,935,935,935,935])]}
+};
+var OPT_S={swc02:{ref:'QXSH1013B',eco:0,name:'Télécommande filaire programmable SWC-02C',lab:'Télécommande filaire SWC-02C',cas:true},swc04:{ref:'QXSH1015B',eco:0,name:'Télécommande filaire WiFi SWC-04C',lab:'Télécommande filaire WiFi SWC-04C',cas:true}};
+
+
+/* ---------- Sinclair mono-split (fiche KEYON p. 24, prix groupes à saisir) ---------- */
+function sm(sz,kwl,w,ch,mn,mx,model,alim,lmax,charge,seer,scop){return {nb:1,type:'KEYON',kw:kwl,w:w,model:model,ref:model,prix:PXS[model],fr:[w,mn,mx],ch:[ch,null,null],cal:16,alim:alim,inter:'4G1,5',std:5,max:lmax,lmax:lmax,deniv:10,charge:charge,seer:seer,scop:scop,comp:16,sz:sz,rng:['keyon'],adapt:''}}
+var GROUPS_SM=[
+ sm('09','2,7',2700,2800,null,null,'SOH-09BIK2','3G1,5',15,500,'6,60 / A++','4,20 / A+'),
+ sm('12','3,2',3200,3400,900,3700,'SOH-12BIK2','3G1,5',20,570,'6,50 / A++','4,10 / A+'),
+ sm('18','4,6',4600,5200,1000,5300,'SOH-18BIK','3G2,5',25,750,'6,47 / A++','4,01 / A+'),
+ sm('24','6,2',6200,6500,1800,6400,'SOH-24BIK','3G2,5',25,1300,'6,84 / A++','4,08 / A+')];
+Object.keys(RANGES_S).forEach(function(r){RANGES_S[r].items.forEach(function(x){var m=typeof x.model==='string'?x.model:x.model[0];x.sz=m.slice(4,6)})});
+
+/* ---------- Midea (fiches techniques + devis Clim Distrib E0001091) ---------- */
+var PXM={'M2O-14N8':1482,'M2O-18N8':1752,'M2O-18HFN8':1977,'M3O-27HFN8':2655,'M3O-18N8':2089,'M3O-21N8':2221,'M3O-27N8':2524,'M4O-28N8':2755,'M4O-36N8':3754,'M5O-42N8':4295,
+ 'CB1-07HRFN8-I':244,'CB1-09HRFN8-I':250,'CB1-12HRFN8-I':286,'CB1-18HRFN8-I':465,'CB1-24HRFN8-I':530,
+ 'EZ-09RD6-I':294,'EZ-12RD6-I':321,'EZ-18RD6-I':512,'EZ-24RD6-I':583,'EZB-09RD6-I':310,'EZB-12RD6-I':337,'EZB-18RD6-I':527,'EZB-24RD6-I':599,
+ 'MOM-09NXD0':794,'MOM-12NXD0':822,'MOM-18NXD0':1327,'MOM-24NXD0':1676,'EZ-09RD6-O':826,'EZ-12RD6-O':855,'EZ-18RD6-O':1419,'EZ-24RD6-O':1968};
+function mg(nb,type,kwl,w,ch,model,alim,inter,max,lmax,charge,seer,full){return {nb:nb,type:type,kw:kwl,w:w,model:model,ref:model,prix:PXM[model],fr:[w,null,null],ch:[ch,null,null],cal:0,alim:alim,inter:inter,std:7.5,max:max,lmax:lmax,deniv:15,charge:charge,seer:seer,comp:12,partial:!full}}
+var GROUPS_M=[
+ mg(2,'Bi-split','4,1',4100,4390,'M2O-14N8','3G2,5','4G1,5',40,25,900,'6,8 / A++',1),
+ mg(2,'Bi-split','5,2',5280,5570,'M2O-18N8','3G2,5','4G1,5',40,25,1250,'6,6 / A++',1),
+ mg(2,'Bi-split haute efficacité','5,2',5200,0,'M2O-18HFN8','3G2,5','4G1,5',40,25,0,'',0),
+ mg(3,'Tri-split','5,2',5280,5570,'M3O-18N8','3G4','4G2,5',60,25,1500,'6,8 / A++',1),
+ mg(3,'Tri-split','6,1',6150,6590,'M3O-21N8','3G4','4G2,5',60,30,1400,'6,5 / A++',1),
+ mg(3,'Tri-split','7,9',7910,8210,'M3O-27N8','3G4','4G2,5',60,30,1720,'6,7 / A++',1),
+ mg(3,'Tri-split haute efficacité','7,9',7900,0,'M3O-27HFN8','3G4','4G2,5',60,30,0,'',0),
+ mg(4,'Quadri-split','8,2',8200,8790,'M4O-28N8','3G4','4G2,5',80,35,2100,'6,5 / A++',1),
+ mg(4,'Quadri-split','10,5',10550,11140,'M4O-36N8','3G6','4G2,5',80,35,2100,'6,5 / A++',1),
+ mg(5,'5 postes','12,3',12310,12600,'M5O-42N8','3G6','4G2,5',80,35,2900,'6,5 / A++',1)];
+function mm(rng,sz,type,kwl,w,ch,model,inter,max,deniv,charge,comp,seer,scop){return {nb:1,type:type,kw:kwl,w:w,model:model,ref:model,prix:PXM[model],fr:[w,null,null],ch:[ch,null,null],cal:16,alim:'3G2,5',inter:inter,std:5,max:max,lmax:max,deniv:deniv,charge:charge,seer:seer,scop:scop,comp:comp,sz:sz,rng:[rng]}}
+var GROUPS_MM=[
+ mm('breezeless','07','Breezeless E','2,0',2050,2340,'MOM-07NXD0','5G1,5',25,10,520,12,'7,60 / A++','4,10 / A+'),
+ mm('breezeless','09','Breezeless E','2,6',2630,2930,'MOM-09NXD0','5G1,5',25,10,550,12,'7,60 / A++','4,10 / A+'),
+ mm('breezeless','12','Breezeless E','3,5',3520,3810,'MOM-12NXD0','5G1,5',25,10,620,12,'7,10 / A++','4,20 / A+'),
+ mm('breezeless','18','Breezeless E','5,2',5270,5570,'MOM-18NXD0','5G1,5',30,20,1100,12,'7,10 / A++','4,10 / A+'),
+ mm('breezeless','24','Breezeless E','7,1',7040,7330,'MOM-24NXD0','5G2,5',50,25,1450,24,'6,4 / A++','4,10 / A+'),
+ mm('solstice','09','Solstice','2,6',2600,2900,'EZ-09RD6-O','5G1,5',25,10,550,12,'8,8 / A+++','4,6 / A++'),
+ mm('solstice','12','Solstice','3,5',3500,3800,'EZ-12RD6-O','5G1,5',25,10,580,12,'8,5 / A+++','4,6 / A++'),
+ mm('solstice','18','Solstice','5,2',5000,5400,'EZ-18RD6-O','5G1,5',30,20,850,12,'8,5 / A+++','4,6 / A++'),
+ mm('solstice','24','Solstice','7,1',7000,7300,'EZ-24RD6-O','5G2,5',50,25,1080,24,'7,9 / A++','4,6 / A++')];
+function mi(sz,w,btu,ch,gaz,liq,kwl,model,prix){return {sz:sz,w:w,btu:btu,ch:ch,gaz:gaz,liq:liq,kw:kwl,model:model,ref:[model],prix:[prix],eco:0}}
+function ms(sz,w,btu,ch,gaz,kwl,mw,mb){return {sz:sz,w:w,btu:btu,ch:ch,gaz:gaz,liq:'1/4',kw:kwl,model:[mw,mb],ref:[mw,mb],prix:[PXM[mw],PXM[mb]],eco:0}}
+var RANGES_M={
+ breezeless:{name:'BREEZELESS E mural',note:'Wi-Fi de série, télécommande incluse. Les prix viennent du devis (modèle avec ioniseur et Wi-Fi). Télécommande filaire : MMB-MSAG.',mk:function(x){return 'Mural BREEZELESS E '+x.model+' ('+x.kw+' kW)'},items:[
+  mi('07',2050,7000,2340,'3/8','1/4','2,0','CB1-07HRFN8-I',244),
+  mi('09',2630,9000,2930,'3/8','1/4','2,6','CB1-09HRFN8-I',250),
+  mi('12',3520,12000,3810,'3/8','1/4','3,5','CB1-12HRFN8-I',286),
+  mi('18',5270,18000,5570,'1/2','1/4','5,2','CB1-18HRFN8-I',465),
+  mi('24',7040,24000,7330,'5/8','3/8','7,1','CB1-24HRFN8-I',530)]},
+ solstice:{name:'SOLSTICE mural',colors:['Blanc','Noir'],note:'Wi-Fi de série, AI EcoMaster, télécommande incluse. Télécommande filaire : MMB-MSAG.',mk:function(x,c){return 'Mural SOLSTICE '+(c==='Noir'?'NOIRE ':'')+x.model[0]+' ('+x.kw+' kW)'},items:[
+  ms('09',2600,9000,2900,'3/8','2,6','EZ-09RD6-I','EZB-09RD6-I'),
+  ms('12',3500,12000,3800,'3/8','3,5','EZ-12RD6-I','EZB-12RD6-I'),
+  ms('18',5000,18000,5400,'1/2','5,2','EZ-18RD6-I','EZB-18RD6-I'),
+  ms('24',7000,24000,7300,'1/2','7,1','EZ-24RD6-I','EZB-24RD6-I')]}
+};
+var OPT_M={mmb:{ref:'MMB-MSAG',eco:0,name:'Télécommande filaire MMB-MSAG',lab:'Télécommande filaire MMB-MSAG',cas:true}};
+function frTxt(a){return num(a[0])+' W'+(a[2]?' ('+num(a[1])+' / '+num(a[2])+')':'')}
+
+function smv(k,model,t){var b=GROUPS_SM.filter(function(x){return x.sz===k})[0];var o={};Object.keys(b).forEach(function(a){o[a]=b[a]});o.type='MARVIN';o.model=model;o.ref=model;o.prix=PXS[model];o.rng=['marvin'];o.partial=true;return o}
+GROUPS_SM.push(smv('09','SOH-09BIM'),smv('12','SOH-12BIM'),smv('18','SOH-18BIM'),smv('24','SOH-24BIM'));
+GROUPS_SM.forEach(function(g){g.eco=7.69});
+/* ---------- Atlantic mono-split (devis E0001092) ---------- */
+function am(rng,kwl,w,ref,prix,alim){var nm=rng==='smart'?'SMART':'PREMIUM';return {nb:1,type:'Mono-split '+nm.charAt(0)+nm.slice(1).toLowerCase(),kw:kwl,w:w,lib:'UE MONO '+kwl+'KW MURAO '+nm+' BLANC',ref:[ref,ref],prix:[prix,prix],eco:7.69,fr:[w,null,null],ch:[null,null,null],alim:alim,sz:String(w),rng:[rng],partial:true,model:ref}}
+var GROUPS_AM=[
+ am('premium','2,1',2100,872151,882,'3G1,5'),am('premium','2,6',2600,872152,989,'3G1,5'),am('premium','3,2',3200,872153,1191,'3G1,5'),am('premium','4,2',4200,872154,1541,'3G2,5'),am('premium','5,3',5300,872155,1858,'3G2,5'),
+ am('smart','2,1',2100,872197,676,'3G1,5'),am('smart','2,7',2700,872198,735,'3G1,5'),am('smart','4,2',4200,872200,1230,'3G2,5'),am('smart','5,3',5300,872201,1390,'3G2,5')];
+Object.keys(RANGES_A).forEach(function(k){RANGES_A[k].items.forEach(function(x){x.sz=String(x.w)})});
+/* Éco-participation : mêmes montants que les références Atlantic pour les produits sans valeur */
+[RANGES_S,RANGES_M].forEach(function(R){Object.keys(R).forEach(function(k){R[k].items.forEach(function(x){x.eco=1.75})})});
+GROUPS_S.concat(GROUPS_M).forEach(function(g){g.eco=g.nb<=2?7.69:10.02});
+GROUPS_MM.forEach(function(g){g.eco=7.69});
+OPT_S.swc02.eco=0.14;OPT_S.swc04.eco=0.14;OPT_M.mmb.eco=0.14;
+/* Liaison double 3/8 + 5/8 pour les unités 24 (Sinclair et Midea) */
+[RANGES_S,RANGES_M].forEach(function(R){Object.keys(R).forEach(function(k){R[k].items.forEach(function(x){if(x.sz==='24'){x.gaz='5/8';x.liq='3/8'}})})});
+
+/* ---------- Marques ---------- */
+var BRANDS={
+ atlantic:{id:'atlantic',name:'Atlantic MURAO',title:'MURAO',src:'tarif catalogue Atlantic pp. 557-559',priced:true,colorOut:true,defRange:'premium',groups:GROUPS_A,monoGroups:GROUPS_AM,monoR:['premium','smart'],ranges:RANGES_A,opt:OPT_A,optKeys:['remote','platine','cozy'],
+  lead:'Tarif catalogue Atlantic pages 557 à 559, prix en € HT. Choisissez un groupe, associez les unités intérieures, appliquez jusqu\'à trois remises et obtenez le devis. Un exemple est pré-rempli, modifiez-le.',
+  okFor:function(g,x){return !(g.w===4000&&x.w>=4200)},
+  gbtn:function(g,c){return {ty:g.type+' · '+(g.nb===1?'mono-split':g.nb+' unités')+' · réf. '+g.ref[c],pr:eur(g.prix[c])+' HT'}},
+  gphoto:function(c){return IMG.groupe[c]},galt:function(c){return 'Groupe extérieur Atlantic '+(c?'design noir':'blanc')},
+  groupLine:function(g,st){var c=colOut()?st.color:0;return {label:g.nb===1?g.lib:g.lib+(c?' DESIGN NOIR':' BLANC'),ref:g.ref[c],pu:g.prix[c],eco:g.eco,missing:false}},
+  specs:function(g){if(g.partial)return [['Froid nominal',num(g.fr[0])+' W'],['Câble alimentation (indicatif)',cabName(g.alim)],['Autres caractéristiques','non fournies dans le devis']];return [['Froid nominal (min / max)',frTxt(g.fr)],['Chaud nominal (min / max)',frTxt(g.ch)],['SEER / SCOP','8,5 / 4,6'],['Intensité nominale',num(g.I,1)+' A'],['Calibre disjoncteur',g.cal+' A'],['Câble alimentation',cabName(g.alim)],['Câble interconnexion',cabName('4G1,5')],['Liaisons standard / max',g.std+' m / '+g.max+' m'],['Par unité intérieure','3 à 25 m'],['Dénivelé max','15 m'],['Charge R32 d\'usine',num(g.charge)+' g'],['Charge additionnelle','20 g/m']]},
+  recapMeta:function(g){if(g.partial)return g.type+' · froid '+num(g.fr[0])+' W · '+cabName(g.alim);return g.type+' · froid '+num(g.fr[0])+' W, chaud '+num(g.ch[0])+' W · SEER 8,5 · SCOP 4,6 · disjoncteur '+g.cal+' A · '+cabName(g.alim)}},
+ sinclair:{id:'sinclair',name:'Sinclair',title:'SINCLAIR',src:'fiches techniques Sinclair pp. 24, 33, 34 et prix du devis Clim Distrib DE/1124',priced:true,colorOut:false,defRange:'keyon',groups:GROUPS_S,monoGroups:GROUPS_SM,monoR:['keyon','marvin'],ranges:RANGES_S,opt:OPT_S,optKeys:['swc02','swc04'],
+  lead:'Sinclair : données des fiches techniques (pages 24, 33 et 34) et prix des groupes et unités intérieures du devis Clim Distrib DE/1124, en € HT. Options, cuivre et câbles : prix à saisir.',
+  okFor:function(){return true},
+  gbtn:function(g){return {ty:g.type+' · '+(g.nb===1?'mono-split':g.nb+' postes')+' · '+g.model,pr:g.prix>0?eur(g.prix)+' HT':'prix à saisir'}},
+  gphoto:function(){return IMG.sgroupe[0]},galt:function(){return 'Groupe extérieur multi-split Sinclair'},
+  groupLine:function(g){var np=!(g.prix>0),p=np?val(state.px[g.ref]):g.prix;return {label:'Groupe extérieur '+(g.nb===1?'mono-split':'multi-split')+' SINCLAIR '+g.model+' ('+g.type+')',ref:g.ref,pu:p,eco:g.eco||0,missing:!p,needpx:np}},
+  specs:function(g){if(g.partial)return [['Froid nominal',num(g.fr[0])+' W'],['Autres caractéristiques','non fournies pour le Marvin mono (contrôles de longueur basés sur le Keyon de même taille)']];var r=[['Froid nominal (min / max)',frTxt(g.fr)],['Chaud nominal (min / max)',frTxt(g.ch)],['SEER / classe',g.seer],['SCOP / classe',g.scop],['Protection électrique',g.cal+' A'],['Câble alimentation',cabName(g.alim)],['Câble interconnexion',cabName('4G1,5')],['Liaison sans appoint',g.std+' m'],['Liaison totale max',g.max+' m'],['Par voie','3 à '+g.lmax+' m'],['Dénivelé max',g.deniv+' m'],['Charge R32 d\'usine',num(g.charge)+' g'],['Charge additionnelle','20 g/m']];if(g.adapt)r.push(['Adaptateurs fournis',g.adapt]);return r},
+  recapMeta:function(g){return g.type+' · '+g.model+' · froid '+num(g.fr[0])+' W, chaud '+num(g.ch[0])+' W · SEER '+g.seer.split(' / ')[0]+' · protection '+g.cal+' A · '+cabName(g.alim)}}
+
+ ,midea:{id:'midea',name:'Midea',title:'MIDEA',src:'fiches techniques Midea et prix du devis Clim Distrib E0001091',priced:true,colorOut:false,defRange:'solstice',groups:GROUPS_M,monoGroups:GROUPS_MM,monoR:['breezeless','solstice'],ranges:RANGES_M,opt:OPT_M,optKeys:['mmb'],
+  lead:'Midea : fiches techniques (groupes multi-split, BREEZELESS E, SOLSTICE) et prix du devis Clim Distrib E0001091, en € HT. La télécommande filaire est à saisir.',
+  okFor:function(){return true},
+  gbtn:function(g){return {ty:g.type+' · '+(g.nb===1?'mono-split':g.nb+' postes')+' · '+g.model,pr:g.prix>0?eur(g.prix)+' HT':'prix à saisir'}},
+  gphoto:function(){return IMG.mgroupe[0]},galt:function(){return 'Groupe extérieur Midea'},
+  groupLine:function(g){var np=!(g.prix>0),p=np?val(state.px[g.ref]):g.prix;return {label:'Groupe extérieur '+(g.nb===1?'mono-split':'multi-split')+' MIDEA '+g.model+' ('+g.type+')',ref:g.ref,pu:p,eco:g.eco||0,missing:!p,needpx:np}},
+  specs:function(g){var r=[['Froid nominal',frTxt(g.fr)]];
+    if(g.partial)return r.concat([['Autres caractéristiques','non fournies dans les fiches']]);
+    r.push(['Chaud nominal',frTxt(g.ch)],['SEER / classe',g.seer],['Câble alimentation',cabName(g.alim)],['Câble interconnexion',cabName(g.inter)],['Liaison préchargée',g.std+' m'],['Liaison totale max',g.max+' m']);
+    if(g.nb>1)r.push(['Par unité intérieure','jusqu\'à '+g.lmax+' m']);
+    r.push(['Dénivelé max',g.deniv+' m'],['Charge R32 d\'usine',num(g.charge)+' g'],['Charge additionnelle',g.comp+' g/m']);return r},
+  recapMeta:function(g){return g.type+' · '+g.model+' · froid '+num(g.fr[0])+' W'+(g.ch[0]?', chaud '+num(g.ch[0])+' W':'')+(g.seer?' · SEER '+g.seer.split(' / ')[0]:'')+' · '+cabName(g.alim)}}
+};
+function colOut(){return !!BR.colorOut&&state.kind!=='mono'}
+var BR=BRANDS.atlantic,GROUPS=GROUPS_A,RANGES=RANGES_A,OPT=OPT_A;
+function applyBrand(){BR=BRANDS[state.brand]||BRANDS.atlantic;if(state.kind==='mono'&&!BR.monoGroups)state.kind='multi';GROUPS=(state.kind==='mono'?BR.monoGroups:BR.groups);RANGES=BR.ranges;OPT=BR.opt}
+function defG(){if(state.kind==='mono')return 0;for(var i=0;i<GROUPS.length;i++)if(GROUPS[i].nb===3)return i;return 0}
+var imgFor=function(s,R){return IMG[s.range][R.colors?Math.min(s.color,R.colors.length-1):0]};
+
 /* ---------- État ---------- */
-var state={g:2,color:0,mode:'cascade',tva:20,notice:'',alimLen:10,client:'',
+var state={rev:0,variants:[],qid:null,kind:'multi',brand:'atlantic',px:{},g:2,color:0,mode:'cascade',tva:20,notice:'',alimLen:10,client:'',
   rem:{groupe:['','',''],ui:['','',''],opt:['','',''],inst:['','','']},
-  cu:{'1/4':{len:25,price:''},'3/8':{len:25,price:''},'1/2':{len:25,price:''}},
+  cu:newCu(),
   cable:{'4G1,5':'','3G1,5':'','3G2,5':'','3G4':''},
   slots:[],free:[]};
 
-function okFor(g,item){return !(g.w===4000 && item.w>=4200)}
+function okFor(g,item){if(g.sz&&item.sz!==g.sz)return false;return BR.okFor(g,item)}
 function compatIdx(range,g){var r=[];RANGES[range].items.forEach(function(x,i){if(okFor(g,x))r.push(i)});return r}
 function nearestIdx(range,w,g){var c=compatIdx(range,g);if(!c.length)return -1;var best=c[0];c.forEach(function(i){if(Math.abs(RANGES[range].items[i].w-w)<Math.abs(RANGES[range].items[best].w-w))best=i});return best}
 function newSlot(gi,i){
-  var g=GROUPS[gi],target=g.w/g.nb,c=compatIdx('premium',g),idx=c[c.length-1];
-  for(var k=0;k<c.length;k++){if(RANGES.premium.items[c[k]].w>=target){idx=c[k];break}}
-  return {room:'',range:'premium',idx:idx,color:state.color,len:5,cabLen:5,cabLinked:true,remote:false,platine:false,cozy:false};
+  var g=GROUPS[gi],target=g.w/g.nb,dr=(g.rng?g.rng[0]:BR.defRange),c=compatIdx(dr,g),idx=c[c.length-1];
+  for(var k=0;k<c.length;k++){if(RANGES[dr].items[c[k]].w>=target){idx=c[k];break}}
+  return {room:'',range:dr,idx:idx,color:colOut()?state.color:0,len:5,cabLen:5,cabLinked:true,remote:false,platine:false,cozy:false,swc02:false,swc04:false,mmb:false};
 }
 function resizeSlots(){
   var g=GROUPS[state.g];
@@ -293,26 +487,34 @@ function resizeSlots(){
   state.slots.length=g.nb;
 }
 function normalize(){
-  if(!(state.g>=0&&state.g<GROUPS.length))state.g=2;
+  if(!(state.g>=0&&state.g<GROUPS.length))state.g=defG();
   resizeSlots();
   var g=GROUPS[state.g];
   state.slots.forEach(function(s,i){
     if(s.range&&!RANGES[s.range])s.range='';
+    if(s.range&&g.rng&&g.rng.indexOf(s.range)<0)s.range=g.rng[0];
     if(s.range){var R=RANGES[s.range];
-      if(!(s.idx>=0&&s.idx<R.items.length&&okFor(g,R.items[s.idx]))){var n=nearestIdx(s.range,R.items[Math.min(Math.max(s.idx|0,0),R.items.length-1)].w,g);s.idx=n}}
+      if(!(s.idx>=0&&s.idx<R.items.length&&okFor(g,R.items[s.idx]))){var n=nearestIdx(s.range,R.items[Math.min(Math.max(s.idx|0,0),R.items.length-1)].w,g);s.idx=n;if(n<0)s.range=''}}
   });
 }
 try{var raw=localStorage.getItem(KEY);if(raw){var o=JSON.parse(raw);if(o&&o.v===1&&o.state){Object.keys(state).forEach(function(k){if(o.state[k]!==undefined)state[k]=o.state[k]})}}}catch(e){}
+if(state.rev!==2){state.rev=2;state.px={};state.slots=[]}
+if(!state.px||typeof state.px!=='object')state.px={};
+if(!Array.isArray(state.variants))state.variants=[];
+fixCu();
+applyBrand();
 normalize();
 if(!state.slots.length)resizeSlots();
 function save(){try{localStorage.setItem(KEY,JSON.stringify({v:1,state:state}))}catch(e){}}
 
 /* ---------- Calculs ---------- */
 function unitInfo(s){
-  if(!s.range)return null;var R=RANGES[s.range],x=R.items[s.idx];if(!x)return null;
-  var col=R.color?s.color:0,coul=R.color?(col?' NOIR':' BLANC'):(R.cassette?'':' BLANC');
-  var label=R.cassette?('Cassette DOJO '+x.model+' ('+kw(x.w)+' kW)'):('UI '+x.kw+'KW '+R.tag+coul);
-  return {R:R,x:x,label:label,ref:x.ref[col]||x.ref[0],pu:x.prix[col]!=null?x.prix[col]:x.prix[0],eco:x.eco};
+  if(!s.range)return null;var R=RANGES[s.range];if(!R)return null;var x=R.items[s.idx];if(!x)return null;
+  var col=R.colors?Math.min(s.color,R.colors.length-1):0,cn=R.colors?R.colors[col]:'';
+  var ref=x.ref[col]||x.ref[0],model=x.model&&x.model.length&&typeof x.model!=='string'?x.model[col]:x.model;
+  var label=R.mk?R.mk({w:x.w,kw:x.kw,model:typeof x.model==='string'?x.model:[model]},cn):(R.cassette?('Cassette DOJO '+x.model+' ('+kw(x.w)+' kW)'):('UI '+x.kw+'KW '+R.tag+(R.colors?' '+cn.toUpperCase():' BLANC')));
+  var cp=x.prix[col]!=null?x.prix[col]:x.prix[0],np=!(cp>0),pu=np?val(state.px[ref]):cp;
+  return {R:R,x:x,label:label,ref:ref,pu:pu,eco:x.eco,missing:!pu,needpx:np};
 }
 function factor(fam){
   var r=state.rem[fam].map(function(v){return Math.min(100,Math.max(0,val(v)))});
@@ -321,24 +523,24 @@ function factor(fam){
 }
 function compute(){
   var g=GROUPS[state.g],lines=[],alerts=[],units=[];
-  lines.push({sec:'groupe',fam:'groupe',label:g.lib+(state.color?' DESIGN NOIR':' BLANC'),ref:g.ref[state.color],qty:1,pu:g.prix[state.color],eco:g.eco});
-  var pipes={'1/4':0,'3/8':0,'1/2':0},cabTotal=0,lenTotal=0,coolSum=0,count=0;
+  var gl0=BR.groupLine(g,state);lines.push({sec:'groupe',fam:'groupe',label:gl0.label,ref:gl0.ref,qty:1,pu:gl0.pu,eco:gl0.eco,missing:gl0.missing,needpx:gl0.needpx});
+  var pipes={'1/4-3/8':0,'1/4-1/2':0,'3/8-1/2':0,'3/8-5/8':0,'1/4-5/8':0},cabTotal=0,lenTotal=0,coolSum=0,count=0;
   state.slots.forEach(function(s,i){
     var u=unitInfo(s);if(!u)return;count++;
     var room=s.room.trim()||('Pièce '+(i+1)),len=val(s.len),cl=val(s.cabLen);
     var rec={i:i,room:room,u:u,s:s,len:len,cabLen:cl,items:[]};units.push(rec);
     var add=function(l){lines.push(l);rec.items.push(l)};
-    add({sec:'ui',fam:'ui',label:u.label,sub:room,ref:u.ref,qty:1,pu:u.pu,eco:u.eco});
+    add({sec:'ui',fam:'ui',label:u.label,sub:room,ref:u.ref,qty:1,pu:u.pu,eco:u.eco,missing:u.missing,needpx:u.needpx});
     if(u.R.cassette)add({sec:'ui',fam:'ui',label:'Façade PB-620KB',sub:room,ref:FACADE.ref,qty:1,pu:FACADE.prix,eco:0});
-    ['remote','platine','cozy'].forEach(function(k){if(s[k])add({sec:'opt',fam:'opt',label:OPT[k].name,sub:room,ref:OPT[k].ref,qty:1,pu:OPT[k].prix,eco:OPT[k].eco})});
-    pipes['1/4']+=len;pipes[u.x.gaz]+=len;lenTotal+=len;cabTotal+=cl;coolSum+=u.x.w;
-    if(len<3||len>25)alerts.push(['warn',room+' : longueur de liaison hors de la plage 3 à 25 m par unité.']);
-    if(s.remote&&!u.R.cassette&&!s.platine)alerts.push(['warn',room+' : la télécommande filaire sur un mural demande la platine interface WK-B.']);
+    BR.optKeys.forEach(function(k){if(s[k]){var np=!(OPT[k].prix>0),op=np?val(state.px[OPT[k].ref]):OPT[k].prix;add({sec:'opt',fam:'opt',label:OPT[k].name,sub:room,ref:OPT[k].ref,qty:1,pu:op,eco:OPT[k].eco||0,missing:!op,needpx:np})}});
+    var pk=(u.x.liq||'1/4')+'-'+u.x.gaz;pipes[pk]=(pipes[pk]||0)+len;lenTotal+=len;cabTotal+=cl;coolSum+=u.x.w;
+    if(len<3||len>(g.lmax||25))alerts.push(['warn',room+' : longueur de liaison hors de la plage 3 à '+(g.lmax||25)+' m par unité.']);
+    if(BR.id==='atlantic'&&s.remote&&!u.R.cassette&&!s.platine)alerts.push(['warn',room+' : la télécommande filaire sur un mural demande la platine interface WK-B.']);
   });
-  DIAMS.forEach(function(d){var m=pipes[d];if(m>0){var coil=val(state.cu[d].len)||25,n=Math.ceil(m/coil-1e-9),pu=val(state.cu[d].price);
-    lines.push({sec:'cu',fam:'inst',label:'Couronne cuivre '+d+'″ ('+coil+' m)',sub:num(m,1)+' m nécessaires',ref:'',qty:n,pu:pu,eco:0,missing:!pu})}});
-  var kI=Math.ceil(cabTotal),pI=val(state.cable['4G1,5']);
-  if(kI>0)lines.push({sec:'cab',fam:'inst',label:'Câble interconnexion '+cabName('4G1,5'),sub:'ext. / int.',ref:'',qty:kI,unit:'m',pu:pI,eco:0,missing:!pI});
+  DIAMS.forEach(function(d){var m=pipes[d];if(m>0){var cd=state.cu[d]||{len:25,price:''},coil=val(cd.len)||25,n=Math.ceil(m/coil-1e-9),pu=val(cd.price);
+    lines.push({sec:'cu',fam:'inst',label:'Couronne cuivre double '+d.replace('-',' + ')+'″ ('+coil+' m)',sub:num(m,1)+' m nécessaires',ref:'',qty:n,pu:pu,eco:0,missing:!pu})}});
+  var ik=g.inter||'4G1,5',kI=Math.ceil(cabTotal),pI=val(state.cable[ik]);
+  if(kI>0)lines.push({sec:'cab',fam:'inst',label:'Câble interconnexion '+cabName(ik),sub:'ext. / int.',ref:'',qty:kI,unit:'m',pu:pI,eco:0,missing:!pI});
   var kA=Math.ceil(val(state.alimLen)),pA=val(state.cable[g.alim]);
   if(kA>0)lines.push({sec:'cab',fam:'inst',label:'Câble alimentation '+cabName(g.alim),sub:'groupe extérieur',ref:'',qty:kA,unit:'m',pu:pA,eco:0,missing:!pA});
   state.free.forEach(function(f){var q=val(f.qty),p=val(f.pu);if(f.label||q||p)lines.push({sec:'free',fam:'inst',label:f.label||'Ligne libre',qty:q,pu:p,eco:0})});
@@ -348,57 +550,56 @@ function compute(){
   lines.forEach(function(l){l.cat=l.qty*l.pu;l.net=l.cat*fac[l.fam];l.puNet=l.pu*fac[l.fam];l.ecoT=l.qty*l.eco;cat+=l.cat;net+=l.net;eco+=l.ecoT});
   var ht=net+eco,tva=ht*val(state.tva)/100;
   if(!count)alerts.unshift(['warn','Aucune unité intérieure choisie.']);
-  if(coolSum>g.fr[2])alerts.push(['bad','Puissance cumulée des unités ('+num(coolSum)+' W) au-dessus du maximum du groupe ('+num(g.fr[2])+' W).']);
+  if(g.fr[2]&&coolSum>g.fr[2])alerts.push(['bad','Puissance cumulée des unités ('+num(coolSum)+' W) au-dessus du maximum du groupe ('+num(g.fr[2])+' W).']);
   if(lenTotal>g.max)alerts.push(['bad','Longueur totale de liaisons ('+num(lenTotal,1)+' m) au-dessus du maximum du groupe ('+g.max+' m).']);
-  if(lenTotal>g.std&&lenTotal<=g.max)alerts.push(['info','Au-delà de '+g.std+' m de liaisons : charge additionnelle de R32, '+num((lenTotal-g.std)*20,0)+' g (20 g/m).']);
-  if(lines.some(function(l){return l.missing}))alerts.push(['info','Prix du cuivre et des câbles à saisir : ils ne figurent pas au catalogue.']);
+  if(lenTotal>g.std&&lenTotal<=g.max)alerts.push(['info','Au-delà de '+g.std+' m de liaisons : charge additionnelle de R32, '+num((lenTotal-g.std)*(g.comp||20),0)+' g ('+(g.comp||20)+' g/m).']);
+  if(lines.some(function(l){return l.missing}))alerts.push(['info','Des prix sont à saisir ('+(BR.id==='atlantic'?'cuivre et câbles':'options, cuivre et câbles')+') : ils ne figurent pas dans les documents fournis.']);
   return {g:g,units:units,lines:lines,alerts:alerts,pipes:pipes,cabTotal:cabTotal,lenTotal:lenTotal,coolSum:coolSum,count:count,fac:fac,cat:cat,net:net,eco:eco,ht:ht,tva:tva,ttc:ht+tva};
 }
 
 /* ---------- Rendu : groupe ---------- */
 function renderGroup(){
-  var c=state.color;
-  $('#gbtns').innerHTML=GROUPS.map(function(g,i){
-    return '<button type="button" class="gbtn" data-act="group" data-v="'+i+'" aria-pressed="'+(i===state.g)+'"><span class="kw">'+g.kw+' kW</span><span class="ty">'+g.type+' · '+g.nb+' unités · réf. '+g.ref[c]+'</span><span class="pr">'+eur(g.prix[c])+' HT</span></button>';
-  }).join('');
+  var c=colOut()?state.color:0;
+  var gk=[],gm={};
+  GROUPS.forEach(function(g,i){var k=state.kind==='mono'&&g.rng?(RANGES[g.rng[0]]?RANGES[g.rng[0]].name:g.rng[0]):g.type;if(!gm[k]){gm[k]=[];gk.push(k)}gm[k].push(i)});
+  $('#gbtns').innerHTML=gk.map(function(k){return '<div class="ggrp"><h4>'+esc(k)+'</h4><div class="gridg">'+gm[k].map(function(i){var g=GROUPS[i],t=BR.gbtn(g,c);
+    return '<button type="button" class="gbtn" data-act="group" data-v="'+i+'" aria-pressed="'+(i===state.g)+'"><span class="kw">'+g.kw+' kW</span><span class="ty">'+t.ty+'</span><span class="pr">'+t.pr+'</span></button>'}).join('')+'</div></div>'}).join('');
+  $('#gseg').hidden=!colOut();
   document.querySelectorAll('[data-act=gcolor]').forEach(function(b){b.setAttribute('aria-pressed',String(+b.dataset.v===c))});
+  document.querySelectorAll('[data-act=brand]').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.v===BR.id))});
   var g=GROUPS[state.g];
-  var rows=[['Froid nominal (min / max)',num(g.fr[0])+' W ('+num(g.fr[1])+' / '+num(g.fr[2])+')'],
-    ['Chaud nominal (min / max)',num(g.ch[0])+' W ('+num(g.ch[1])+' / '+num(g.ch[2])+')'],
-    ['SEER / SCOP','8,5 / 4,6'],['Intensité nominale',num(g.I,1)+' A'],['Calibre disjoncteur',g.cal+' A'],
-    ['Câble alimentation',cabName(g.alim)],['Câble interconnexion',cabName('4G1,5')],
-    ['Liaisons standard / max',g.std+' m / '+g.max+' m'],['Par unité intérieure','3 à 25 m'],['Dénivelé max','15 m'],
-    ['Charge R32 d\'usine',num(g.charge)+' g'],['Charge additionnelle','20 g/m']];
-  $('#gspecs').innerHTML=rows.map(function(r){return '<div><dt>'+r[0]+'</dt><dd>'+r[1]+'</dd></div>'}).join('');
-  $('#gphoto').innerHTML=photo(IMG.groupe[c],'Groupe extérieur Atlantic '+(c?'design noir':'blanc'));
+  $('#gspecs').innerHTML=BR.specs(g).map(function(r){return '<div><dt>'+r[0]+'</dt><dd>'+r[1]+'</dd></div>'}).join('');
+  $('#gphoto').innerHTML=photo(BR.gphoto(c),BR.galt(c));
   $('#gnotice').innerHTML=state.notice?'<div class="chip info">'+esc(state.notice)+'</div>':'';
-  $('#slotsHint').textContent=g.nb+' unités possibles sur ce groupe.';
+  $('#slotsHint').textContent=g.nb===1?'Mono-split : 1 unité intérieure.':g.nb+' unités possibles sur ce groupe.';
+  document.querySelectorAll('[data-act=kind]').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.v===state.kind));if(b.dataset.v==='mono')b.disabled=!BR.monoGroups});
+  $('#khint').textContent=BR.monoGroups?'':'';
+  $('#lead').textContent=BR.lead;
 }
 
 /* ---------- Rendu : unités ---------- */
 function slotHTML(s,i){
   var g=GROUPS[state.g],R=s.range?RANGES[s.range]:null;
-  var rOpts=[['','Aucune'],['premium','MURAO Premium'],['smart','MURAO Smart'],['access','MURAO Access'],['dojo','DOJO cassette 600×600']].map(function(o){return '<option value="'+o[0]+'"'+(o[0]===s.range?' selected':'')+'>'+o[1]+'</option>'}).join('');
+  var rOpts='<option value="">Aucune</option>'+Object.keys(RANGES).filter(function(k){return !g.rng||g.rng.indexOf(k)>=0}).map(function(k){return '<option value="'+k+'"'+(k===s.range?' selected':'')+'>'+RANGES[k].name+'</option>'}).join('');
   var h='<div class="slot" id="slot-'+i+'"><div class="slot-top"><span class="slot-title">Unité '+(i+1)+'</span><span class="slot-price" id="sp-'+i+'"></span></div>';
-  h+=R?('<div class="slot-main"><div class="ph">'+photo(IMG[s.range][R.color?s.color:0],R.name)+'</div><div class="slot-form">'):'<div class="slot-form">';
+  h+=R?('<div class="slot-main"><div class="ph">'+photo(imgFor(s,R),R.name)+'</div><div class="slot-form">'):'<div class="slot-form">';
   h+='<div class="fields">';
   h+='<label class="f">Pièce<input type="text" id="slot-'+i+'-room" data-slot="'+i+'" data-f="room" value="'+esc(s.room)+'" placeholder="Salon, chambre…"></label>';
   h+='<label class="f">Gamme<select id="slot-'+i+'-range" data-slot="'+i+'" data-f="range">'+rOpts+'</select></label>';
   if(R){
     var po=compatIdx(s.range,g).map(function(k){var x=R.items[k];return '<option value="'+k+'"'+(k===s.idx?' selected':'')+'>'+kw(x.w)+' kW · '+num(x.btu)+' BTU</option>'}).join('');
     h+='<label class="f">Puissance<select id="slot-'+i+'-idx" data-slot="'+i+'" data-f="idx">'+po+'</select></label>';
-    if(R.color)h+='<label class="f">Couleur<select id="slot-'+i+'-color" data-slot="'+i+'" data-f="color"><option value="0"'+(s.color?'':' selected')+'>Blanc</option><option value="1"'+(s.color?' selected':'')+'>Noir</option></select></label>';
+    if(R.colors){var cs=Math.min(s.color,R.colors.length-1);h+='<label class="f">Couleur<select id="slot-'+i+'-color" data-slot="'+i+'" data-f="color">'+R.colors.map(function(n,k){return '<option value="'+k+'"'+(k===cs?' selected':'')+'>'+n+'</option>'}).join('')+'</select></label>'}
     h+='<label class="f">Liaison (m)<input type="number" min="0" step="0.5" id="slot-'+i+'-len" data-slot="'+i+'" data-f="len" value="'+esc(s.len)+'" inputmode="decimal"></label>';
     h+='<label class="f">Câble interco (m)<input type="number" min="0" step="0.5" id="slot-'+i+'-cabLen" data-slot="'+i+'" data-f="cabLen" value="'+esc(s.cabLen)+'" inputmode="decimal"></label>';
   }
   h+='</div>';
   if(R){
-    h+='<div class="checks"><label><input type="checkbox" id="slot-'+i+'-remote" data-slot="'+i+'" data-f="remote"'+(s.remote?' checked':'')+'>Télécommande filaire ('+eur(OPT.remote.prix)+')</label>';
-    if(!R.cassette){
-      h+='<label><input type="checkbox" id="slot-'+i+'-platine" data-slot="'+i+'" data-f="platine"'+(s.platine?' checked':'')+'>Platine WK-B ('+eur(OPT.platine.prix)+')</label>';
-      h+='<label><input type="checkbox" id="slot-'+i+'-cozy" data-slot="'+i+'" data-f="cozy"'+(s.cozy?' checked':'')+'>Wi-Fi CozyTouch ('+eur(OPT.cozy.prix)+')</label>';
-    }
+    h+='<div class="checks">';
+    BR.optKeys.forEach(function(k){var o=OPT[k];if(R.cassette&&!o.cas)return;
+      h+='<label><input type="checkbox" id="slot-'+i+'-'+k+'" data-slot="'+i+'" data-f="'+k+'"'+(s[k]?' checked':'')+'>'+o.lab+(o.prix>0?' ('+eur(o.prix)+')':'')+'</label>'});
     h+='</div>';
+    if(R.note)h+='<p class="hint">'+esc(R.note)+'</p>';
   }
   h+=R?'</div></div>':'</div>';
   return h+'</div>';
@@ -418,15 +619,15 @@ function renderRem(){
   $('#mode').value=state.mode;$('#tva').value=String(state.tva);
 }
 function renderInst(){
-  var h='<thead><tr><th>Diamètre</th><th class="r">Besoin (m)</th><th>Couronne</th><th class="r">Nb</th><th>Prix couronne € HT</th></tr></thead><tbody>';
+  var h='<thead><tr><th>Liaison frigorifique</th><th class="r">Besoin (m)</th><th>Couronne</th><th class="r">Nb</th><th>Prix couronne € HT</th></tr></thead><tbody>';
   DIAMS.forEach(function(d){
-    h+='<tr><td>'+(d==='1/4'?'1/4″ liquide':d+'″ gaz')+'</td><td class="r" id="cun-'+d+'">0</td><td><select data-culen="'+d+'" id="culen-'+d+'" aria-label="Longueur couronne '+d+'">'+[15,20,25,50].map(function(L){return '<option value="'+L+'"'+(+state.cu[d].len===L?' selected':'')+'>'+L+' m</option>'}).join('')+'</select></td><td class="r" id="cuq-'+d+'">0</td><td><input type="number" min="0" step="0.01" inputmode="decimal" placeholder="à saisir" id="cup-'+d+'" data-cuprice="'+d+'" value="'+esc(state.cu[d].price)+'"></td></tr>';
+    h+='<tr><td>'+'Double '+d.replace('-',' + ')+'″'+'</td><td class="r" id="cun-'+d+'">0</td><td><select data-culen="'+d+'" id="culen-'+d+'" aria-label="Longueur couronne '+d+'">'+[15,20,25,50].map(function(L){return '<option value="'+L+'"'+(+state.cu[d].len===L?' selected':'')+'>'+L+' m</option>'}).join('')+'</select></td><td class="r" id="cuq-'+d+'">0</td><td><input type="number" min="0" step="0.01" inputmode="decimal" placeholder="à saisir" id="cup-'+d+'" data-cuprice="'+d+'" value="'+esc(state.cu[d].price)+'"></td></tr>';
   });
   $('#cutable').innerHTML=h+'</tbody>';
   var g=GROUPS[state.g];
   var c='<thead><tr><th>Câble</th><th>Longueur (m)</th><th>Prix € HT / m</th></tr></thead><tbody>';
-  c+='<tr><td>Interconnexion ext. / int. '+cabName('4G1,5')+'</td><td id="cabi">0</td><td><input type="number" min="0" step="0.01" inputmode="decimal" placeholder="à saisir" id="cab-4G1,5" data-cable="4G1,5" value="'+esc(state.cable['4G1,5'])+'"></td></tr>';
-  c+='<tr><td>Alimentation du groupe '+cabName(g.alim)+' (disjoncteur '+g.cal+' A)</td><td><input type="number" min="0" step="1" inputmode="decimal" id="alimlen" value="'+esc(state.alimLen)+'"></td><td><input type="number" min="0" step="0.01" inputmode="decimal" placeholder="à saisir" id="cab-'+g.alim+'" data-cable="'+g.alim+'" value="'+esc(state.cable[g.alim])+'"></td></tr>';
+  var ik=g.inter||'4G1,5';c+='<tr><td>Interconnexion ext. / int. '+cabName(ik)+'</td><td id="cabi">0</td><td><input type="number" min="0" step="0.01" inputmode="decimal" placeholder="à saisir" id="cab-'+ik+'" data-cable="'+ik+'" value="'+esc(state.cable[ik]||'')+'"></td></tr>';
+  c+='<tr><td>Alimentation du groupe '+cabName(g.alim)+' '+(g.cal?'(disjoncteur '+g.cal+' A)':'')+'</td><td><input type="number" min="0" step="1" inputmode="decimal" id="alimlen" value="'+esc(state.alimLen)+'"></td><td><input type="number" min="0" step="0.01" inputmode="decimal" placeholder="à saisir" id="cab-'+g.alim+'" data-cable="'+g.alim+'" value="'+esc(state.cable[g.alim]||'')+'"></td></tr>';
   $('#cabtable').innerHTML=c+'</tbody>';
 }
 function renderFree(){
@@ -443,11 +644,11 @@ function refresh(){
   var C=compute();
   FAMS.forEach(function(f){var e=$('#reme-'+f[0]);if(e)e.textContent=num((1-C.fac[f[0]])*100,1)+' %'});
   state.slots.forEach(function(s,i){var e=$('#sp-'+i),u=unitInfo(s);if(!e)return;
-    e.innerHTML=u?('réf. '+u.ref+' · catalogue <b>'+eur(u.pu)+'</b> · net <b>'+eur(u.pu*C.fac.ui)+'</b>'):'Emplacement libre'});
+    e.innerHTML=u?(u.missing?('réf. '+u.ref+' · <b>prix à saisir</b>'):('réf. '+u.ref+' · catalogue <b>'+eur(u.pu)+'</b> · net <b>'+eur(u.pu*C.fac.ui)+'</b>')):'Emplacement libre'});
   DIAMS.forEach(function(d){var m=C.pipes[d],coil=val(state.cu[d].len)||25;
     $('#cun-'+d).textContent=m>0?num(m,1):'—';$('#cuq-'+d).textContent=m>0?Math.ceil(m/coil-1e-9):'—'});
   $('#cabi').textContent=C.cabTotal>0?num(C.cabTotal,1):'—';
-  $('#powerline').innerHTML='<div class="chip info">Puissance froid cumulée des unités : <b>'+num(C.coolSum)+' W</b> pour un groupe de '+num(C.g.fr[0])+' W nominal (maximum '+num(C.g.fr[2])+' W). Liaisons : <b>'+num(C.lenTotal,1)+' m</b> sur '+C.g.max+' m maximum.</div>';
+  $('#powerline').innerHTML='<div class="chip info">Puissance froid cumulée des unités : <b>'+num(C.coolSum)+' W</b> pour un groupe de '+num(C.g.fr[0])+' W nominal'+(C.g.fr[2]?' (maximum '+num(C.g.fr[2])+' W)':'')+'. Liaisons : <b>'+num(C.lenTotal,1)+' m</b>'+(C.g.max?' sur '+C.g.max+' m maximum':'')+'.</div>';
   $('#alerts').innerHTML=C.alerts.map(function(a){return '<div class="chip '+a[0]+'">'+esc(a[1])+'</div>'}).join('');
   var h='';
   SECS.forEach(function(s){
@@ -469,45 +670,150 @@ function refresh(){
     '<div class="mut"><span>TVA '+num(val(state.tva),1)+' %</span><span>'+eur(C.tva)+'</span></div>'+
     '<div class="big"><span>Total TTC</span><span>'+eur(C.ttc)+'</span></div>';
   $('#barTotal').textContent=eur(C.ht);
+  renderPx(C);
   renderRecap(C);
   save();
 }
 function lineBlock(items){
   var cat=0,net=0,eco=0,h='<div class="rc-l">';
   items.forEach(function(l){cat+=l.cat;net+=l.net;eco+=l.ecoT;
-    h+='<div><span>'+esc(l.label)+(l.ref?' <small class="rc-m">('+l.ref+')</small>':'')+'</span><span class="n">'+eur(l.cat)+'</span></div>'});
+    h+='<div><span>'+esc(l.label)+(l.ref?' <small class="rc-m">('+l.ref+')</small>':'')+(l.missing?'<span class="tag">prix à saisir</span>':'')+'</span><span class="n">'+eur(l.cat)+'</span></div>'});
   if(net<cat-0.005)h+='<div class="tt"><span>Net après remise</span><span class="n">'+eur(net)+'</span></div>';
   else h+='<div class="tt"><span>Net HT</span><span class="n">'+eur(net)+'</span></div>';
   if(eco>0)h+='<div><span class="rc-m">Éco-participation</span><span class="n rc-m">'+eur(eco)+'</span></div>';
   return h+'</div>';
 }
-function renderRecap(C){
-  var g=C.g,c=state.color,gl=C.lines[0];
-  $('#rcdate').textContent='Devis du '+new Date().toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'})+' · prix en € HT';
-  var h='<div class="rc-card main"><div class="ph">'+photo(IMG.groupe[c],'Groupe extérieur Atlantic '+(c?'design noir':'blanc'))+'</div><span class="rc-k">Groupe extérieur</span><div class="rc-t">'+esc(gl.label)+'</div>'+
-    '<div class="rc-m">réf. '+gl.ref+' · '+g.type+' · froid '+num(g.fr[0])+' W, chaud '+num(g.ch[0])+' W · SEER 8,5 · SCOP 4,6 · disjoncteur '+g.cal+' A · '+cabName(g.alim)+'</div>'+lineBlock([gl])+'</div>';
+function recapParts(C){
+  var g=C.g,c=colOut()?state.color:0,gl=C.lines[0];
+  var h='<div class="rc-card main"><div class="ph">'+photo(BR.gphoto(c),BR.galt(c))+'</div><span class="rc-k">Groupe extérieur</span><div class="rc-t">'+esc(gl.label)+'</div>'+
+    '<div class="rc-m">réf. '+gl.ref+' · '+BR.recapMeta(g)+'</div>'+lineBlock([gl])+'</div>';
   C.units.forEach(function(r){var R=r.u.R,x=r.u.x;
-    h+='<div class="rc-card"><div class="ph">'+photo(IMG[r.s.range][R.color?r.s.color:0],R.name)+'</div><span class="rc-k">'+esc(r.room)+'</span><div class="rc-t">'+esc(r.u.label)+'</div>'+
-      '<div class="rc-m">réf. '+r.u.ref+' · froid '+num(x.w)+' W, chaud '+num(x.ch)+' W · '+num(x.btu)+' BTU · gaz '+x.gaz+'″, liquide 1/4″ · liaison '+num(r.len,1)+' m</div>'+lineBlock(r.items)+'</div>';
+    h+='<div class="rc-card"><div class="ph">'+photo(imgFor(r.s,R),R.name)+'</div><span class="rc-k">'+esc(r.room)+'</span><div class="rc-t">'+esc(r.u.label)+'</div>'+
+      '<div class="rc-m">réf. '+r.u.ref+' · froid '+num(x.w)+' W, chaud '+num(x.ch)+' W · '+num(x.btu)+' BTU · gaz '+x.gaz+'″, liquide '+(x.liq||'1/4')+'″ · liaison '+num(r.len,1)+' m</div>'+lineBlock(r.items)+'</div>';
   });
   if(!C.units.length)h+='<div class="rc-card"><span class="rc-m">Aucune unité intérieure choisie.</span></div>';
-  $('#rcunits').innerHTML=h;
   var inst=C.lines.filter(function(l){return l.sec==='cu'||l.sec==='cab'||l.sec==='free'});
   var t='<thead><tr><th>Désignation</th><th>Qté</th><th>Net HT</th></tr></thead><tbody>';
   if(!inst.length)t+='<tr><td colspan="3" class="hint">Aucune ligne.</td></tr>';
   inst.forEach(function(l){t+='<tr><td style="white-space:normal">'+esc(l.label)+(l.missing?'<span class="tag">prix à saisir</span>':'')+'</td><td>'+l.qty+(l.unit?' '+l.unit:'')+'</td><td>'+eur(l.net)+'</td></tr>'});
-  $('#rcinst').innerHTML=t+'</tbody>';
   var r='<thead><tr><th>Famille</th><th>R1</th><th>R2</th><th>R3</th><th>Total</th></tr></thead><tbody>';
   FAMS.forEach(function(f){r+='<tr><td style="white-space:normal">'+f[1]+'</td>'+state.rem[f[0]].map(function(v){return '<td>'+(val(v)?num(val(v),1)+' %':'—')+'</td>'}).join('')+'<td>'+num((1-C.fac[f[0]])*100,1)+' %</td></tr>'});
-  $('#rcrem').innerHTML=r+'</tbody>';
   var o=[['Total catalogue HT',eur(C.cat)],['Remises','− '+eur(C.cat-C.net)],['Total net HT',eur(C.net)],['Éco-participation',eur(C.eco)],['Total HT avec éco-part.',eur(C.ht)],['TVA '+num(val(state.tva),1)+' %',eur(C.tva)]];
   var tt='<tbody>'+o.map(function(x){return '<tr><td>'+x[0]+'</td><td class="r">'+x[1]+'</td></tr>'}).join('')+'<tr class="big"><td>Total TTC</td><td class="r">'+eur(C.ttc)+'</td></tr></tbody>';
-  $('#rctot').innerHTML=tt;
+  return {units:h,inst:t+'</tbody>',rem:r+'</tbody>',tot:tt};
+}
+/* Variantes : on calcule chaque variante avec sa propre configuration, puis on rétablit l'état en cours */
+var SNAPKEYS=['brand','kind','g','color','mode','tva','alimLen','rem','cu','cable','slots','free'];
+function clone(o){return JSON.parse(JSON.stringify(o))}
+function snapshot(){var o={};SNAPKEYS.forEach(function(k){o[k]=clone(state[k])});return o}
+function underSnap(snap,fn){
+  var bak={};SNAPKEYS.forEach(function(k){bak[k]=state[k]});
+  try{SNAPKEYS.forEach(function(k){if(snap[k]!==undefined)state[k]=clone(snap[k])});if(snap.kind===undefined)state.kind='multi';applyBrand();return fn()}
+  finally{SNAPKEYS.forEach(function(k){state[k]=bak[k]});applyBrand()}
+}
+/* Équivalence automatique : Premium = Marvin, Access = Keyon, Smart = Keyon (et inversement) */
+var TIER={premium:'top',smart:'mid',access:'mid',marvin:'top',keyon:'mid',solstice:'top',breezeless:'mid'};
+var TIERR={atlantic:{top:'premium',mid:'access'},sinclair:{top:'marvin',mid:'keyon'},midea:{top:'solstice',mid:'breezeless'}};
+var WIFIINC={marvin:1,solstice:1,breezeless:1};
+function equivSnap(to){
+  var tb=BRANDS[to],mono=state.kind==='mono',fromG=GROUPS[state.g],notes=[],snap=snapshot();
+  if(mono&&!tb.monoGroups)return null;
+  var info=state.slots.map(function(s){var R=s.range?RANGES[s.range]:null,x=R?R.items[s.idx]:null;
+    return {s:s,range:s.range,w:x?x.w:0,cn:R&&R.colors?R.colors[Math.min(s.color,R.colors.length-1)]:'Blanc'}});
+  var oB=BR,oG=GROUPS,oR=RANGES,oO=OPT;
+  try{
+    BR=tb;RANGES=tb.ranges;OPT=tb.opt;GROUPS=mono?tb.monoGroups:tb.groups;
+    var trs=info.map(function(f){if(!f.range)return '';var t=TIER[f.range];if(!t)return null;var r=TIERR[to][t];if(mono&&tb.monoR.indexOf(r)<0)r=(to==='atlantic'?'smart':TIERR[to].mid);return r});
+    var bi=0,bd=1e12;
+    if(mono){var f0=info[0]||{w:fromG.w},t0=trs[0]||tb.monoR[0];
+      GROUPS.forEach(function(g,i){if(g.rng.indexOf(t0)<0)return;var d=Math.abs(g.w-(f0.w||fromG.w));if(d<bd){bd=d;bi=i}})}
+    else GROUPS.forEach(function(g,i){var d=Math.abs(g.w-fromG.w)+(g.nb===fromG.nb?0:1e6)+(g.model&&g.model.indexOf('HF')>0?1:0);if(d<bd){bd=d;bi=i}});
+    var tg=GROUPS[bi];
+    if(mono)notes.push('Groupe '+fromG.model+' remplacé par '+tg.model+'.');
+    else notes.push('Groupe '+fromG.type+' '+fromG.kw+' kW remplacé par '+tg.type+' '+tg.kw+' kW.');
+    snap.brand=to;snap.kind=mono?'mono':'multi';snap.g=bi;snap.color=0;
+    snap.slots=info.map(function(f,i){
+      var s=f.s,room=s.room.trim()||('Pièce '+(i+1)),tr=trs[i];
+      var n={room:s.room,range:'',idx:0,color:0,len:s.len,cabLen:s.cabLen,cabLinked:s.cabLinked,remote:false,platine:false,cozy:false,swc02:false,swc04:false,mmb:false};
+      if(f.range&&!tr){notes.push(room+' : pas d\'équivalent pour la cassette DOJO, emplacement laissé vide.');return n}
+      if(!tr)return n;
+      var idx=nearestIdx(tr,f.w,tg);
+      if(idx<0){notes.push(room+' : aucune unité compatible avec ce groupe.');return n}
+      n.range=tr;n.idx=idx;
+      var nw=RANGES[tr].items[idx].w;
+      if(Math.abs(nw-f.w)>=100)notes.push(room+' : '+kw(f.w)+' kW remplacé par '+kw(nw)+' kW (puissance la plus proche).');
+      if(f.cn==='Noir')n.color=Math.max(0,(RANGES[tr].colors||[]).indexOf('Noir'));
+      var wired=!!(s.remote||s.swc02||s.swc04||s.mmb),wifiOpt=!!(s.cozy||s.swc04);
+      if(to==='atlantic'){
+        n.remote=wired;n.platine=wired;n.cozy=wifiOpt||!!WIFIINC[f.range];
+        if(WIFIINC[f.range])notes.push(room+' : Wi-Fi inclus de série remplacé par la CozyBox Atlantic.');
+      }else if(to==='sinclair'){
+        if(wifiOpt&&!WIFIINC[tr])n.swc04=true;else if(wired)n.swc02=true;
+        if(wifiOpt&&WIFIINC[tr])notes.push(room+' : Wi-Fi inclus de série sur la MARVIN.');
+        if(s.platine)notes.push(room+' : la platine WK-B n\'a pas d\'équivalent chez Sinclair.');
+      }else{
+        n.mmb=wired;
+        if(s.platine)notes.push(room+' : la platine WK-B n\'a pas d\'équivalent chez Midea.');
+      }
+      return n;
+    });
+    if(!info.length)snap.slots=[];
+    return {snap:snap,notes:notes,toName:tb.name,to:to};
+  }finally{BR=oB;GROUPS=oG;RANGES=oR;OPT=oO}
+}
+function equivData(to){
+  try{var E=equivSnap(to);if(!E)return null;var d=variantData({name:'Équivalent '+E.toName+' (auto)',snap:E.snap,notes:E.notes});if(d){d.auto=true;d.to=to;d.snap=E.snap}return d}catch(e){return null}
+}
+function loadSnap(snap){
+  SNAPKEYS.forEach(function(k){if(snap[k]!==undefined)state[k]=clone(snap[k])});
+  fixCu();
+  applyBrand();pxSig='';state.notice='';normalize();
+  renderGroup();renderSlots();renderRem();renderInst();renderFree();refresh();setView('conf');
+}
+function variantData(v){
+  try{return underSnap(v.snap,function(){var C=compute();return {name:v.name,brand:BR.name,title:BR.title,C:C,P:recapParts(C),grp:C.g.type+' '+C.g.kw+' kW',notes:v.notes||[]}})}
+  catch(e){return null}
+}
+function renderVariants(Ccur){
+  var cur={name:'Configuration en cours',brand:BR.name,C:Ccur,P:recapParts(Ccur),grp:Ccur.g.type+' '+Ccur.g.kw+' kW',cur:true};
+  var eqs=['atlantic','sinclair','midea'].filter(function(b){return b!==BR.id}).map(equivData).filter(Boolean);
+  var cols=[cur].concat(eqs,state.variants.map(function(v,i){var d=variantData(v);if(d)d.i=i;return d}).filter(Boolean));
+  var best=Infinity;cols.forEach(function(c){if(c.C.count&&c.C.ttc<best)best=c.C.ttc});
+  var rows=[['Marque',function(c){return esc(c.brand)}],['Groupe',function(c){return esc(c.grp)}],['Unités intérieures',function(c){return c.C.units.map(function(u){return esc(u.u.label)}).join('<br>')||'—'}],['Remarques',function(c){return c.notes&&c.notes.length?c.notes.map(esc).join('<br>'):'—'}],
+    ['Total catalogue HT',function(c){return eur(c.C.cat)}],['Remises',function(c){return '− '+eur(c.C.cat-c.C.net)}],['Total net HT',function(c){return eur(c.C.net)}],['Éco-participation',function(c){return eur(c.C.eco)}],['Total HT',function(c){return eur(c.C.ht)}],['TVA',function(c){return eur(c.C.tva)}]];
+  var h='<thead><tr><th></th>'+cols.map(function(c){return '<th>'+esc(c.name)+'</th>'}).join('')+'</tr></thead><tbody>';
+  rows.forEach(function(r){h+='<tr><td>'+r[0]+'</td>'+cols.map(function(c){return '<td>'+r[1](c)+'</td>'}).join('')+'</tr>'});
+  h+='<tr><td>Total TTC</td>'+cols.map(function(c){return '<td class="'+(c.C.count&&c.C.ttc===best&&cols.length>1?'best':'')+'">'+eur(c.C.ttc)+'</td>'}).join('')+'</tr>';
+  h+='<tr><td></td>'+cols.map(function(c){return '<td>'+(c.cur?'':(c.auto?'<div class="btns"><button type="button" class="btn sm" data-act="saveequiv" data-v="'+c.to+'">Enregistrer</button><button type="button" class="btn sm" data-act="loadequiv" data-v="'+c.to+'">Charger</button></div>':'<div class="btns"><button type="button" class="btn sm" data-act="loadvar" data-v="'+c.i+'">Charger</button><button type="button" class="btn sm" data-act="delvar" data-v="'+c.i+'">Retirer</button></div>'))+'</td>'}).join('')+'</tr>';
+  $('#rcvartable').innerHTML=h+'</tbody>';
+  var monoNote=false?'<p class="hint">Pas d\'équivalent Atlantic en mono-split : ses données ne sont pas fournies.</p>':'';
+  $('#rcvardetail').innerHTML=monoNote+cols.filter(function(c){return !c.cur}).map(function(c){
+    return '<details class="rc-det"'+(c.auto?' open':'')+'><summary>'+esc(c.name)+' · '+esc(c.brand)+' · '+eur(c.C.ttc)+' TTC</summary>'+(c.notes&&c.notes.length?'<ul class="rc-notes">'+c.notes.map(function(n){return '<li>'+esc(n)+'</li>'}).join('')+'</ul>':'')+'<div class="rc-grid">'+c.P.units+'</div><div class="rc-two"><div><h3>Installation</h3><div class="tablewrap"><table>'+c.P.inst+'</table></div></div><div><h3>Remises appliquées</h3><div class="tablewrap"><table>'+c.P.rem+'</table></div></div></div><div class="tablewrap"><table class="rc-tot">'+c.P.tot+'</table></div></details>'}).join('');
+  window.__cols=cols.length;
+}
+function renderRecap(C){
+  var P=recapParts(C);
+  $('#rcdate').textContent='Devis du '+new Date().toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'})+' · prix en € HT';
+  $('#rcunits').innerHTML=P.units;$('#rcinst').innerHTML=P.inst;$('#rcrem').innerHTML=P.rem;$('#rctot').innerHTML=P.tot;
+  renderVariants(C);
+}
+var pxSig='';
+function renderPx(C){
+  var seen={},rows=[];
+  C.lines.forEach(function(l){if(l.needpx&&l.ref&&!seen[l.ref]){seen[l.ref]=1;rows.push(l)}});
+  $('#p-px').hidden=!rows.length;
+  var sig=rows.map(function(l){return l.ref}).join('|');
+  if(sig===pxSig)return;pxSig=sig;
+  var h='<thead><tr><th>Référence</th><th>Désignation</th><th>Prix catalogue € HT</th></tr></thead><tbody>';
+  rows.forEach(function(l){h+='<tr><td>'+esc(l.ref)+'</td><td style="white-space:normal;min-width:200px">'+esc(l.label)+'</td><td><input type="number" min="0" step="0.01" inputmode="decimal" placeholder="à saisir" id="px-'+esc(l.ref)+'" data-px="'+esc(l.ref)+'" value="'+esc(state.px[l.ref]||'')+'" aria-label="Prix '+esc(l.ref)+'"></td></tr>'});
+  $('#pxtable').innerHTML=h+'</tbody>';
 }
 function recapText(){
-  var C=compute(),t=['DEVIS MULTI-SPLIT MURAO — '+C.g.type+' '+C.g.kw+' kW'].concat(state.client.trim()?['Client / chantier : '+state.client.trim()]:[],['Prix en € HT, tarif catalogue pp. 557-559','']);
+  var C=compute(),t=['DEVIS MULTI-SPLIT '+BR.title+' — '+C.g.type+' '+C.g.kw+' kW'].concat(state.client.trim()?['Client / chantier : '+state.client.trim()]:[],['Prix en € HT, '+BR.src,'']);
   C.lines.forEach(function(l){t.push('- '+l.label+(l.sub?' ['+l.sub+']':'')+(l.ref?' (réf. '+l.ref+')':'')+' : '+l.qty+(l.unit?' '+l.unit:'')+' x '+eur(l.pu)+' cat. = '+eur(l.net)+' net')});
   t.push('','Total catalogue HT : '+eur(C.cat),'Remises : -'+eur(C.cat-C.net),'Total net HT : '+eur(C.net),'Éco-participation : '+eur(C.eco),'Total HT : '+eur(C.ht),'TVA '+num(val(state.tva),1)+' % : '+eur(C.tva),'Total TTC : '+eur(C.ttc));
+  var vl=state.variants.map(function(v){return variantData(v)}).filter(Boolean);['midea','sinclair','atlantic'].filter(function(b){return b!==BR.id}).map(equivData).filter(Boolean).forEach(function(d){vl.unshift(d)});
+  if(vl.length){t.push('','VARIANTES');vl.forEach(function(d){if(d)t.push('- '+d.name+' ('+d.brand+', '+d.grp+', '+d.C.count+' unité'+(d.C.count>1?'s':'')+') : net HT '+eur(d.C.net)+', total HT '+eur(d.C.ht)+', TTC '+eur(d.C.ttc)+(d.notes&&d.notes.length?' — '+d.notes.join(' '):''))})}
   return t.join('\n');
 }
 
@@ -527,13 +833,79 @@ function setView(v){
   $('#barBtn').textContent=v==='conf'?'Récapitulatif':'← Configuration';
   try{window.scrollTo(0,0);document.querySelector('header').scrollIntoView()}catch(e){}
 }
+function setBrand(b){
+  if(!BRANDS[b]||b===state.brand)return;
+  if(!BRANDS[b].monoGroups)state.kind='multi';
+  state.brand=b;applyBrand();state.g=defG();state.notice='';state.slots=[];pxSig='';
+  resizeSlots();normalize();renderGroup();renderSlots();renderInst();refresh();
+}
+function setKind(k){
+  if(k===state.kind||(k==='mono'&&!BR.monoGroups))return;
+  state.kind=k;applyBrand();state.g=defG();state.notice='';state.slots=[];pxSig='';
+  resizeSlots();normalize();renderGroup();renderSlots();renderInst();refresh();
+}
+
+/* ---------- Devis clients enregistrés ---------- */
+var QKEY='murao-devis-v1',QUOTES=[];
+try{var qr=localStorage.getItem(QKEY);if(qr)QUOTES=JSON.parse(qr)||[]}catch(e){QUOTES=[]}
+if(!Array.isArray(QUOTES))QUOTES=[];
+function qpersist(){try{localStorage.setItem(QKEY,JSON.stringify(QUOTES))}catch(e){}}
+function qtoast(t){var e=$('#qtoast');if(e)e.textContent=t}
+function qsummary(q){try{return underSnap(q.snap,function(){var C=compute();return {brand:BR.name,grp:C.g.type+' '+C.g.kw+' kW',ht:C.ht,ttc:C.ttc}})}catch(e){return null}}
+function qrender(){
+  var el=$('#qlist');if(!el)return;
+  if(!QUOTES.length){el.innerHTML='<p class="hint">Aucun devis enregistré.</p>';return}
+  el.innerHTML=QUOTES.slice().sort(function(a,b){return b.ts-a.ts}).map(function(q){var i=QUOTES.indexOf(q),sm=qsummary(q),d=new Date(q.ts).toLocaleString('fr-FR',{dateStyle:'short',timeStyle:'short'});
+    return '<div class="qitem" data-cur="'+(q.id===state.qid)+'"><div><b>'+esc(q.client||'Sans nom')+'</b>'+(q.id===state.qid?' · en cours':'')+'<div class="sub">'+(sm?esc(sm.brand)+' · '+esc(sm.grp)+' · '+eur(sm.ht)+' HT · '+eur(sm.ttc)+' TTC':'devis')+' · '+(q.variants||[]).length+' variante(s) · '+d+'</div></div><div class="btns"><button type="button" class="btn sm" data-act="qopen" data-v="'+i+'">Ouvrir</button><button type="button" class="btn sm" data-act="qdel" data-v="'+i+'">Supprimer</button></div></div>'}).join('');
+}
+function qsave(asNew){
+  var nm=(state.client||'').trim()||'Sans nom',ex=!asNew&&state.qid?QUOTES.filter(function(q){return q.id===state.qid})[0]:null;
+  var rec={id:ex?ex.id:'q'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),client:nm,ts:Date.now(),snap:snapshot(),variants:clone(state.variants)};
+  if(ex)QUOTES[QUOTES.indexOf(ex)]=rec;else QUOTES.push(rec);
+  state.qid=rec.id;save();qpersist();qrender();qtoast(ex?'Devis mis à jour.':'Devis enregistré.');
+}
+function qopen(i){
+  var q=QUOTES[i];if(!q)return;
+  state.variants=clone(q.variants||[]);state.client=q.client==='Sans nom'?'':q.client;state.qid=q.id;
+  $('#client').value=state.client;loadSnap(q.snap);qrender();
+}
+function qnew(){
+  state.variants=[];state.client='';state.qid=null;state.slots=[];state.free=[];state.cu=newCu();
+  state.g=defG();state.notice='';pxSig='';resizeSlots();normalize();$('#client').value='';
+  renderGroup();renderSlots();renderRem();renderInst();renderFree();refresh();qrender();qtoast('Nouveau devis vide.');
+}
+function qexport(){
+  var data=JSON.stringify({type:'murao-devis',v:1,quotes:QUOTES},null,1);
+  try{var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type:'application/json'}));a.download='devis-clients.json';document.body.appendChild(a);a.click();a.remove();qtoast('Fichier devis-clients.json exporté.')}
+  catch(e){qtoast('Export impossible sur ce navigateur.')}
+}
+function qimport(file){
+  var fr=new FileReader();fr.onload=function(){try{var o=JSON.parse(fr.result),n=0;(o.quotes||[]).forEach(function(q){if(!q||!q.snap||!q.id)return;var j=-1;QUOTES.forEach(function(x,k){if(x.id===q.id)j=k});if(j>=0){if(q.ts>QUOTES[j].ts)QUOTES[j]=q}else QUOTES.push(q);n++});qpersist();qrender();qtoast(n+' devis importé(s).')}catch(e){qtoast('Fichier non valide.')}};
+  fr.readAsText(file);
+}
 function onClick(e){
   var b=e.target.closest('[data-act]');if(!b)return;var a=b.dataset.act,v=b.dataset.v;
-  if(a==='group')setGroup(+v);
+  if(a==='brand')setBrand(v);
+  else if(a==='qsave')qsave(false);else if(a==='qsavenew')qsave(true);else if(a==='qnew')qnew();else if(a==='qexport')qexport();else if(a==='qimportbtn')$('#qimport').click();
+  else if(a==='qopen')qopen(+v);else if(a==='qdel'){var dq=QUOTES[+v];if(dq){if(dq.id===state.qid)state.qid=null;QUOTES.splice(+v,1);qpersist();save();qrender();qtoast('Devis supprimé.')}}
+  else if(a==='kind')setKind(v);
+  else if(a==='group')setGroup(+v);
   else if(a==='gcolor'){state.color=+v;state.slots.forEach(function(s){if(s.range==='premium')s.color=state.color});renderGroup();renderSlots();refresh()}
   else if(a==='copyrem'){var r=state.rem.groupe.slice();['ui','opt','inst'].forEach(function(f){state.rem[f]=r.slice()});renderRem();refresh()}
   else if(a==='addfree'){state.free.push({label:'',qty:1,pu:''});renderFree();refresh()}
   else if(a==='delfree'){state.free.splice(+v,1);renderFree();refresh()}
+  else if(a==='addvar'){
+    if(state.variants.length>=6){$('#vartoast').textContent='6 variantes au maximum, retirez-en une.';return}
+    var nm=$('#varname').value.trim()||('Variante '+(state.variants.length+1)+' · '+BR.name);
+    state.variants.push({name:nm,snap:snapshot(),notes:[]});$('#varname').value='';refresh();$('#vartoast').textContent='Variante enregistrée.';
+  }
+  else if(a==='delvar'){state.variants.splice(+v,1);refresh();$('#vartoast').textContent='Variante retirée.'}
+  else if(a==='loadvar'){var vv=state.variants[+v];if(vv)loadSnap(vv.snap)}
+  else if(a==='loadequiv'){var E1=equivSnap(v);if(E1)loadSnap(E1.snap)}
+  else if(a==='saveequiv'){
+    if(state.variants.length>=6){$('#vartoast').textContent='6 variantes au maximum, retirez-en une.';return}
+    var E2=equivSnap(v);if(!E2)return;state.variants.push({name:'Équivalent '+E2.toName,snap:E2.snap,notes:E2.notes});refresh();$('#vartoast').textContent='Équivalent enregistré en variante.';
+  }
   else if(a==='view')setView(v);
   else if(a==='toggle')setView(view==='conf'?'recap':'conf');
   else if(a==='copy'){
@@ -552,16 +924,18 @@ function onField(e){
     if(f==='room')s.room=t.value;
     else if(f==='len'){s.len=t.value;if(s.cabLinked){s.cabLen=t.value;var c=$('#slot-'+i+'-cabLen');if(c)c.value=t.value}}
     else if(f==='cabLen'){s.cabLen=t.value;s.cabLinked=false}
-    else if(f==='range'){var prev=s.range?RANGES[s.range].items[s.idx].w:2100;s.range=t.value;if(s.range){s.idx=nearestIdx(s.range,prev,g);if(s.range==='premium')s.color=state.color}else{s.remote=s.platine=s.cozy=false}
+    else if(f==='range'){var prev=s.range?RANGES[s.range].items[s.idx].w:2100;s.range=t.value;if(s.range){s.idx=nearestIdx(s.range,prev,g);if(s.range==='premium')s.color=state.color;s.color=Math.min(s.color,(RANGES[s.range].colors||[0]).length-1)}else{s.remote=s.platine=s.cozy=s.swc02=s.swc04=s.mmb=false}
       if(s.range==='dojo'){s.platine=false;s.cozy=false}rerenderSlot(i)}
     else if(f==='idx')s.idx=+t.value;
     else if(f==='color'){s.color=+t.value;rerenderSlot(i)}
     else if(f==='remote'){s.remote=t.checked;s.platine=t.checked&&s.range!=='dojo';rerenderSlot(i)}
     else if(f==='platine')s.platine=t.checked;
+    else if(f==='swc02'||f==='swc04'||f==='mmb')s[f]=t.checked;
     else if(f==='cozy')s.cozy=t.checked;
     refresh();return;
   }
   if(t.id==='client'){state.client=t.value;save();return}
+  if(d.px){state.px[d.px]=t.value;refresh();return}
   if(d.rem){var p=d.rem.split(':');state.rem[p[0]][+p[1]]=t.value;refresh();return}
   if(d.cuprice){state.cu[d.cuprice].price=t.value;refresh();return}
   if(d.culen){state.cu[d.culen].len=+t.value;refresh();return}
@@ -576,7 +950,8 @@ document.addEventListener('input',onField);
 document.addEventListener('change',onField);
 
 $('#client').value=state.client||'';
-renderGroup();renderSlots();renderRem();renderInst();renderFree();refresh();
+$('#qimport').addEventListener('change',function(){if(this.files[0])qimport(this.files[0]);this.value=''});
+renderGroup();renderSlots();renderRem();renderInst();renderFree();refresh();qrender();
 })();
 </script>
 
