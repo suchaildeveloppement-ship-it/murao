@@ -37,3 +37,4 @@ Ne changez pas les noms de fichiers du dossier `img/`, la page les appelle par l
 - Pour mettre à jour les prix du catalogue, modifiez les tableaux `GROUPS_A` et `RANGES_A` (Atlantic) `GROUPS_S` et `RANGES_S` (Sinclair) ou `GROUPS_M` et `RANGES_M` (Midea) au début du script de `index.html`.
 - Éco-participation : montants Atlantic repris pour les produits sans valeur (unités intérieures 1,75 €, groupes 2 postes et mono 7,69 €, 3 postes et plus 10,02 €, télécommandes filaires 0,14 €).
 - Devis clients : enregistrés dans le navigateur (localStorage, clé murao-devis-v1) avec leurs variantes ; export et import en fichier JSON depuis le récapitulatif.
+- Export PDF : bouton « Exporter en PDF » du récapitulatif (impression du navigateur, choisir « Enregistrer au format PDF »).
